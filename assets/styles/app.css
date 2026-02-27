@@ -1,0 +1,25 @@
+/* Couleur principale */
+:root {
+    --ea-color-primary: #4f46e5;
+  }
+  
+  /* Sidebar un peu plus clean */
+  .sidebar {
+    background: #0f172a !important;
+  }
+  
+  .sidebar .menu a {
+    color: #e5e7eb !important;
+  }
+  
+  .sidebar .menu a:hover,
+  .sidebar .menu a.active {
+    background: rgba(79, 70, 229, 0.25) !important;
+    color: white !important;
+  }
+  
+  /* Topbar */
+  .content-header {
+    border-bottom: 1px solid #1f2937;
+  }
+  

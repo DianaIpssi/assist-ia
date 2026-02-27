@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nos biens - Assist'IA{% endblock %}
+
+{% block body %}
+<div class="max-w-6xl mx-auto py-10">
+    <h1 class="text-3xl font-bold mb-8">Nos biens disponibles</h1>
+
+    <div class="grid md:grid-cols-3 gap-6">
+        {% for property in properties %}
+            <div class="bg-white shadow rounded-2xl p-6">
+                <h2 class="text-xl font-bold mb-2">{{ property.title }}</h2>
+
+                {% if property.description %}
+                    <p class="text-gray-600">{{ property.description }}</p>
+                {% endif %}
+
+                <p class="font-semibold mt-2">{{ property.price }} €</p>
+            </div>
+        {% else %}
+            <p>Aucun bien pour le moment.</p>
+        {% endfor %}
+    </div>
+</div>
+<div id="react-chat" class="fixed bottom-6 right-6"></div>
+{% endblock %}

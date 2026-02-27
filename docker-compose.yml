@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  database:
+    image: mysql:8.0
+    container_name: assist_db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: assist_ia
+    ports:
+      - "3307:3306"
+
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: assist_php
+    volumes:
+      - .:/var/www/html
+    ports:
+      - "8000:8000"
+    depends_on:
+      - database
