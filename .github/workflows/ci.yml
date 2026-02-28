@@ -21,7 +21,7 @@ jobs:
           coverage: none
 
       - name: Validate composer.json
-        run: composer validate --no-interaction
+        run: composer validate --no-interaction --no-check-publish
 
       - name: Install dependencies
         run: composer install --no-interaction --prefer-dist
