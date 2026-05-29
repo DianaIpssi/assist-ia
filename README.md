@@ -47,7 +47,7 @@ symfony serve
 
 - Catalogue public des biens publiés (`/biens`)
 - Chatbot de recherche par budget (`POST /api/chat`)
-- Autocomplétion d'adresses via [api-adresse.data.gouv.fr](https://api-adresse.data.gouv.fr)
+- Autocomplétion d'adresses via l'[API Adresse data.gouv.fr](https://adresse.data.gouv.fr/outils/api) (endpoint : `GET /search/?q=...`)
 - Espace agent : dashboard, CRUD biens, statut brouillon/publié
 - Back-office EasyAdmin (`/admin`, accès admin)
 - Authentification sécurisée (hachage bcrypt/Argon2, CSRF, limitation des tentatives de connexion)
