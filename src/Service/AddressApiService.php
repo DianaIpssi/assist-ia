@@ -12,6 +12,8 @@ class AddressApiService
     }
 
     /**
+     * Fonction qui interroge l'API adresse du gouvernement.
+     *
      * @return array<int, array{label: string, city: string, postcode: string, lat: float, lon: float}>
      */
     public function search(string $query): array

@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Conversations clients - Assist'IA{% endblock %}
+
+{% block body %}
+<div class="max-w-5xl mx-auto space-y-6">
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-3xl font-bold">Historique des chats</h1>
+            <p class="text-gray-600 mt-1">Conversations entre les clients et l'assistant IA</p>
+        </div>
+        <a href="{{ path('agent_dashboard') }}" class="text-sm text-rose-400 hover:underline">← Dashboard</a>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        {% if sessions is empty %}
+            <p class="p-6 text-gray-600">Aucune conversation pour le moment.</p>
+        {% else %}
+            <table class="w-full text-left">
+                <thead class="bg-gray-50 text-sm text-gray-500 border-b">
+                    <tr>
+                        <th class="p-4">Client</th>
+                        <th class="p-4">Dernier message</th>
+                        <th class="p-4">Date</th>
+                        <th class="p-4 text-right">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for session in sessions %}
+                        <tr class="border-b last:border-b-0">
+                            <td class="p-4">
+                                {{ session.clientName ?: 'Visiteur anonyme' }}
+                                {% if session.clientEmail %}
+                                    <br><span class="text-sm text-gray-500">{{ session.clientEmail }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="p-4 text-gray-700">{{ session.lastMessage|slice(0, 80) }}{% if session.lastMessage|length > 80 %}…{% endif %}</td>
+                            <td class="p-4 text-sm text-gray-500">{{ session.lastAt|date('d/m/Y H:i') }}</td>
+                            <td class="p-4 text-right">
+                                <a href="{{ path('agent_chat_show', {sessionId: session.sessionId}) }}"
+                                   class="text-rose-400 hover:underline text-sm font-medium">
+                                    Voir
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

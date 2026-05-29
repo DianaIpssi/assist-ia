@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouveau créneau - Assist'IA{% endblock %}
+
+{% block body %}
+<div class="max-w-md mx-auto">
+    <h1 class="text-2xl font-bold mb-6">Ajouter un créneau</h1>
+
+    {% for message in app.flashes('error') %}
+        <div class="mb-4 rounded-lg bg-red-50 border border-red-200 text-red-800 px-4 py-3">{{ message }}</div>
+    {% endfor %}
+
+    <form method="post" class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4">
+        <div>
+            <label class="block text-sm font-medium mb-1" for="date">Date</label>
+            <input type="date" id="date" name="date" required class="w-full rounded-lg border border-gray-300 px-3 py-2">
+        </div>
+        <div>
+            <label class="block text-sm font-medium mb-1" for="start_time">Heure de début</label>
+            <input type="time" id="start_time" name="start_time" required class="w-full rounded-lg border border-gray-300 px-3 py-2">
+        </div>
+        <div>
+            <label class="block text-sm font-medium mb-1" for="end_time">Heure de fin</label>
+            <input type="time" id="end_time" name="end_time" required class="w-full rounded-lg border border-gray-300 px-3 py-2">
+        </div>
+        <button type="submit" class="w-full px-4 py-3 rounded-xl bg-rose-400 text-white font-semibold hover:bg-rose-500">
+            Enregistrer
+        </button>
+    </form>
+</div>
+{% endblock %}

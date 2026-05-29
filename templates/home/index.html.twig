@@ -3,28 +3,83 @@
 {% block title %}Assist'IA - Accueil{% endblock %}
 
 {% block body %}
-<div class="max-w-5xl mx-auto">
-    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-10">
-        <h1 class="text-4xl font-extrabold mb-4">
-            Trouvez un bien sans stress.
-        </h1>
+<div class="max-w-6xl mx-auto space-y-10">
+    <section class="grid lg:grid-cols-2 gap-8 items-start">
+        <div class="space-y-6">
+            <div>
+                <p class="text-rose-400 font-semibold mb-2">Recherche immobilière</p>
+                <h1 class="text-4xl font-extrabold leading-tight">
+                    Trouvez le bien qui vous correspond
+                </h1>
+                <p class="text-gray-600 mt-4 text-lg">
+                    Discutez avec notre assistant pour affiner votre recherche (budget, type de bien…),
+                    parcourez les annonces ou prenez rendez-vous avec un agent.
+                </p>
+            </div>
 
-        <p class="text-gray-600 mb-8 text-lg">
-            Indiquez votre budget au chatbot pour trouver des biens adaptés,
-            ou parcourez directement les annonces disponibles.
-        </p>
+            <div class="flex flex-wrap gap-3">
+                <a href="{{ path('public_property_index') }}"
+                   class="px-6 py-3 rounded-xl bg-rose-400 text-white font-semibold hover:bg-rose-500">
+                    Voir les biens
+                </a>
+                <a href="{{ path('public_appointment') }}"
+                   class="px-6 py-3 rounded-xl bg-white border border-gray-200 text-gray-900 font-semibold hover:bg-gray-50">
+                    Prendre RDV
+                </a>
+                <a href="{{ path('public_contact') }}"
+                   class="px-6 py-3 rounded-xl bg-white border border-gray-200 text-gray-900 font-semibold hover:bg-gray-50">
+                    Nous contacter
+                </a>
+            </div>
 
-        <div class="flex gap-4">
-            <a href="/biens"
-               class="px-6 py-3 rounded-xl bg-rose-400 text-white font-semibold hover:bg-rose-500">
-                Voir les biens
-            </a>
-
-            <a href="{{ path('app_login') }}"
-               class="px-6 py-3 rounded-xl bg-gray-100 text-gray-900 font-semibold hover:bg-gray-200">
-                Espace agent
-            </a>
+            <div class="grid grid-cols-3 gap-3 text-center text-sm">
+                <div class="bg-white rounded-xl border border-gray-100 p-4">
+                    <p class="font-bold text-rose-400 text-lg">1</p>
+                    <p class="text-gray-600 mt-1">Parlez à l'assistant</p>
+                </div>
+                <div class="bg-white rounded-xl border border-gray-100 p-4">
+                    <p class="font-bold text-rose-400 text-lg">2</p>
+                    <p class="text-gray-600 mt-1">Consultez les biens</p>
+                </div>
+                <div class="bg-white rounded-xl border border-gray-100 p-4">
+                    <p class="font-bold text-rose-400 text-lg">3</p>
+                    <p class="text-gray-600 mt-1">Rencontrez un agent</p>
+                </div>
+            </div>
         </div>
-    </div>
+
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+            <p class="font-semibold mb-3 px-1">Assistant de recherche</p>
+            <div id="react-chat" data-chat-embedded="1"></div>
+        </div>
+    </section>
+
+    {% if featuredProperties is not empty %}
+        <section>
+            <div class="flex items-center justify-between mb-5">
+                <h2 class="text-2xl font-bold">Biens récents</h2>
+                <a href="{{ path('public_property_index') }}" class="text-rose-400 hover:underline text-sm font-medium">
+                    Tout voir →
+                </a>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-5">
+                {% for property in featuredProperties %}
+                    <article class="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
+                        <img src="{{ property.displayImageUrl }}" alt="{{ property.title }}" class="w-full h-40 object-cover">
+                        <div class="p-4">
+                            <h3 class="font-bold">{{ property.title }}</h3>
+                            <p class="text-sm text-gray-500 mt-1">{{ property.city }}</p>
+                            <p class="text-rose-500 font-semibold mt-2">{{ property.price|number_format(0, ',', ' ') }} €</p>
+                            <a href="{{ path('public_property_show', {id: property.id}) }}"
+                               class="inline-block mt-3 text-sm text-rose-400 hover:underline">
+                                Voir le détail
+                            </a>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
 </div>
 {% endblock %}

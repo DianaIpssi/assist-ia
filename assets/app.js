@@ -79,7 +79,6 @@ function initAddressAutocomplete() {
             return;
           }
 
-          // Auto-fill postal code from the best match to help fast data entry.
           const defaultPostalInput = resolvePostalInput();
           if (
             defaultPostalInput &&
@@ -116,12 +115,23 @@ function initAddressAutocomplete() {
   });
 }
 
-function Chat() {
+function getSessionId() {
+  const key = 'assistia_chat_session';
+  let sessionId = window.sessionStorage.getItem(key);
+  if (!sessionId) {
+    sessionId = window.crypto?.randomUUID?.() ?? String(Date.now());
+    window.sessionStorage.setItem(key, sessionId);
+  }
+  return sessionId;
+}
+
+function Chat({ embedded = false }) {
   const [messages, setMessages] = useState([
-    { role: 'assistant', content: "Bonjour 🙂 Dis-moi ce que tu cherches (ville, budget, chambres…)" }
+    { role: 'assistant', content: "Bonjour ! Indiquez votre budget ou le type de bien recherché (ex : T2, studio…)" }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [sessionId, setSessionId] = useState(getSessionId);
   const listRef = useRef(null);
 
   useEffect(() => {
@@ -142,11 +152,15 @@ function Chat() {
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: text }),
+        body: JSON.stringify({ message: text, sessionId }),
       });
 
       const data = await response.json();
-      setMessages(prev => [...prev, { role: 'assistant', content: data.reply ?? "Je n’ai pas compris 😅" }]);
+      if (data.sessionId) {
+        setSessionId(data.sessionId);
+        window.sessionStorage.setItem('assistia_chat_session', data.sessionId);
+      }
+      setMessages(prev => [...prev, { role: 'assistant', content: data.reply ?? "Je n'ai pas compris" }]);
     } catch (e) {
       setMessages(prev => [...prev, { role: 'assistant', content: "Oups, erreur réseau. Réessaie." }]);
     } finally {
@@ -161,31 +175,32 @@ function Chat() {
     }
   }
 
+  const width = embedded ? '100%' : 320;
+  const messagesHeight = embedded ? 280 : 220;
+
   return React.createElement(
     'div',
     {
       style: {
-        width: 320,
+        width,
         borderRadius: 16,
         background: 'white',
-        boxShadow: '0 10px 30px rgba(0,0,0,0.15)',
+        boxShadow: embedded ? 'none' : '0 10px 30px rgba(0,0,0,0.15)',
         overflow: 'hidden',
         fontFamily: 'system-ui',
+        border: embedded ? '1px solid #f3f4f6' : 'none',
       }
     },
-    // Header
     React.createElement(
       'div',
       { style: { padding: 12, borderBottom: '1px solid #eee', fontWeight: 700 } },
-      "Assist'IA 🤖"
+      embedded ? "Parlez à l'assistant Assist'IA" : "Assist'IA"
     ),
-
-    // messages
     React.createElement(
       'div',
       {
         ref: listRef,
-        style: { height: 220, padding: 12, overflowY: 'auto', background: '#fafafa' }
+        style: { height: messagesHeight, padding: 12, overflowY: 'auto', background: '#fafafa' }
       },
       messages.map((m, i) =>
         React.createElement(
@@ -216,8 +231,6 @@ function Chat() {
         )
       )
     ),
-
-    // input
     React.createElement(
       'div',
       { style: { padding: 10, display: 'flex', gap: 8, borderTop: '1px solid #fbcfe8' } },
@@ -225,7 +238,7 @@ function Chat() {
         value: input,
         onChange: e => setInput(e.target.value),
         onKeyDown,
-        placeholder: 'Écris ici…',
+        placeholder: 'Ex : budget 150000 ou je cherche un T2…',
         rows: 1,
         style: {
           flex: 1,
@@ -258,11 +271,14 @@ function Chat() {
 }
 
 function bootstrapApp() {
-  const container = document.getElementById('react-chat');
-  if (container && container.dataset.reactMounted !== '1') {
+  document.querySelectorAll('#react-chat').forEach((container) => {
+    if (container.dataset.reactMounted === '1') {
+      return;
+    }
     container.dataset.reactMounted = '1';
-    createRoot(container).render(React.createElement(Chat));
-  }
+    const embedded = container.dataset.chatEmbedded === '1';
+    createRoot(container).render(React.createElement(Chat, { embedded }));
+  });
 
   initAddressAutocomplete();
 }

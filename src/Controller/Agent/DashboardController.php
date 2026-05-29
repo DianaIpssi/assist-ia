@@ -11,6 +11,7 @@ use Symfony\Component\Routing\Attribute\Route;
 final class DashboardController extends AbstractController
 {
     #[Route('/agent', name: 'agent_dashboard', methods: ['GET'])]
+    /** Fonction qui affiche le tableau de bord agent avec les stats. */
     public function index(
         PropertyRepository $propertyRepository,
         AvailabilitySlotRepository $availabilitySlotRepository

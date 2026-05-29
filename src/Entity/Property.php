@@ -191,6 +191,7 @@ class Property
         return $this;
     }
 
+    /** Fonction qui indique si le bien est publié. */
     public function isPublished(): bool
     {
         return $this->status === self::STATUS_PUBLISHED;
@@ -220,6 +221,7 @@ class Property
         return $this;
     }
 
+    /** Fonction qui retourne l'URL d'image à afficher (avec fallback). */
     public function getDisplayImageUrl(): string
     {
         return $this->imageUrl ?? 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&q=80';

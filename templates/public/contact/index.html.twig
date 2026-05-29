@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Contact - Assist'IA{% endblock %}
+
+{% set fieldClass = 'w-full rounded-lg border border-gray-300 px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-rose-200 focus:border-rose-300' %}
+{% set labelClass = 'block text-sm font-semibold text-gray-700 mb-1' %}
+
+{% block body %}
+<div class="max-w-2xl mx-auto">
+    <h1 class="text-3xl font-bold mb-2">Contact</h1>
+    <p class="text-gray-600 mb-8">Une question ? Écrivez-nous, ou prenez directement rendez-vous avec un agent.</p>
+
+    {% for message in app.flashes('success') %}
+        <div class="mb-4 rounded-lg bg-green-50 border border-green-200 text-green-800 px-4 py-3">{{ message }}</div>
+    {% endfor %}
+
+    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 md:p-8 space-y-6">
+        <div class="text-sm text-gray-600 space-y-1">
+            <p><strong>Email :</strong> contact@assist-ia.fr</p>
+            <p><strong>Téléphone :</strong> 01.00.00.00</p>
+            <p><strong>Horaires :</strong> Lun–Ven, 9h–18h</p>
+        </div>
+
+        {{ form_start(form, {attr: {class: 'space-y-5'}}) }}
+            <div>
+                {{ form_label(form.name, null, {label_attr: {class: labelClass}}) }}
+                {{ form_widget(form.name, {attr: {class: fieldClass}}) }}
+                {{ form_errors(form.name) }}
+            </div>
+            <div>
+                {{ form_label(form.email, null, {label_attr: {class: labelClass}}) }}
+                {{ form_widget(form.email, {attr: {class: fieldClass}}) }}
+                {{ form_errors(form.email) }}
+            </div>
+            <div>
+                {{ form_label(form.message, null, {label_attr: {class: labelClass}}) }}
+                {{ form_widget(form.message, {attr: {rows: 5, class: fieldClass}}) }}
+                {{ form_errors(form.message) }}
+            </div>
+            <button type="submit" class="px-6 py-3 rounded-xl bg-rose-400 text-white font-semibold hover:bg-rose-500">
+                Envoyer
+            </button>
+        {{ form_end(form) }}
+
+        <p class="text-sm text-gray-500 pt-2">
+            Vous préférez un rendez-vous ?
+            <a href="{{ path('public_appointment') }}" class="text-rose-400 hover:underline">Réserver un créneau</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

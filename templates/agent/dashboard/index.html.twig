@@ -21,6 +21,12 @@
                 <a href="/property" class="px-4 py-2 rounded-lg bg-gray-100 text-gray-900 font-semibold hover:bg-gray-200">
                     Gerer mes biens
                 </a>
+                <a href="{{ path('agent_chats') }}" class="px-4 py-2 rounded-lg bg-gray-100 text-gray-900 font-semibold hover:bg-gray-200">
+                    Historique chats
+                </a>
+                <a href="{{ path('agent_calendar') }}" class="px-4 py-2 rounded-lg bg-gray-100 text-gray-900 font-semibold hover:bg-gray-200">
+                    Calendrier
+                </a>
                 <a href="/biens" class="px-4 py-2 rounded-lg bg-gray-100 text-gray-900 font-semibold hover:bg-gray-200">
                     Vue client
                 </a>
@@ -105,15 +111,18 @@
             <a href="/property/new" class="block w-full px-4 py-3 rounded-lg bg-rose-400 text-white font-semibold text-center hover:bg-rose-500">
                 Creer une annonce
             </a>
+            <a href="{{ path('agent_chats') }}" class="block w-full px-4 py-3 rounded-lg bg-gray-100 text-gray-900 font-semibold text-center hover:bg-gray-200">
+                Voir les conversations clients
+            </a>
+            <a href="{{ path('agent_calendar') }}" class="block w-full px-4 py-3 rounded-lg bg-gray-100 text-gray-900 font-semibold text-center hover:bg-gray-200">
+                Gerer mon calendrier
+            </a>
             <a href="/property" class="block w-full px-4 py-3 rounded-lg bg-gray-100 text-gray-900 font-semibold text-center hover:bg-gray-200">
                 Ouvrir le back-office biens
             </a>
             <a href="http://localhost:8081" target="_blank" rel="noreferrer" class="block w-full px-4 py-3 rounded-lg bg-gray-100 text-gray-900 font-semibold text-center hover:bg-gray-200">
                 Ouvrir phpMyAdmin
             </a>
-            <p class="text-sm text-gray-500">
-                Astuce : utilise la vue client pour verifier que tes annonces et le chatbot s'affichent correctement.
-            </p>
         </article>
     </section>
 </div>

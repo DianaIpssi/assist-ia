@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Prendre rendez-vous - Assist'IA{% endblock %}
+
+{% set fieldClass = 'w-full rounded-lg border border-gray-300 px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-rose-200 focus:border-rose-300' %}
+{% set labelClass = 'block text-sm font-semibold text-gray-700 mb-1' %}
+
+{% block body %}
+<div class="max-w-2xl mx-auto">
+    <h1 class="text-3xl font-bold mb-2">Prendre rendez-vous</h1>
+    <p class="text-gray-600 mb-8">Choisissez un créneau disponible pour échanger avec un agent immobilier.</p>
+
+    {% for message in app.flashes('success') %}
+        <div class="mb-4 rounded-lg bg-green-50 border border-green-200 text-green-800 px-4 py-3">{{ message }}</div>
+    {% endfor %}
+    {% for message in app.flashes('error') %}
+        <div class="mb-4 rounded-lg bg-red-50 border border-red-200 text-red-800 px-4 py-3">{{ message }}</div>
+    {% endfor %}
+
+    {% if availableSlots is empty %}
+        <div class="bg-white rounded-2xl border border-gray-100 p-6 text-gray-600">
+            Aucun créneau disponible pour le moment. Utilisez la page <a href="{{ path('public_contact') }}" class="text-rose-400 hover:underline">Contact</a>.
+        </div>
+    {% else %}
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 md:p-8">
+            {{ form_start(form, {attr: {class: 'space-y-5'}}) }}
+                <div>
+                    {{ form_label(form.slot, null, {label_attr: {class: labelClass}}) }}
+                    {{ form_widget(form.slot, {attr: {class: fieldClass}}) }}
+                    {{ form_errors(form.slot) }}
+                </div>
+                <div>
+                    {{ form_label(form.clientName, null, {label_attr: {class: labelClass}}) }}
+                    {{ form_widget(form.clientName, {attr: {class: fieldClass}}) }}
+                    {{ form_errors(form.clientName) }}
+                </div>
+                <div>
+                    {{ form_label(form.clientEmail, null, {label_attr: {class: labelClass}}) }}
+                    {{ form_widget(form.clientEmail, {attr: {class: fieldClass}}) }}
+                    {{ form_errors(form.clientEmail) }}
+                </div>
+                <div>
+                    {{ form_label(form.clientPhone, null, {label_attr: {class: labelClass}}) }}
+                    {{ form_widget(form.clientPhone, {attr: {class: fieldClass}}) }}
+                    {{ form_errors(form.clientPhone) }}
+                </div>
+                <button type="submit" class="px-6 py-3 rounded-xl bg-rose-400 text-white font-semibold hover:bg-rose-500">
+                    Confirmer le rendez-vous
+                </button>
+            {{ form_end(form) }}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

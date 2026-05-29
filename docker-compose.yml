@@ -26,6 +26,11 @@ services:
       APP_ENV: dev
       APP_SECRET: ChangeMeInProduction
       DATABASE_URL: mysql://root:root@database:3306/assist_ia?serverVersion=8.0&charset=utf8mb4
+      OLLAMA_ENABLED: "true"
+      OLLAMA_BASE_URL: "http://host.docker.internal:11434"
+      OLLAMA_MODEL: "llama3.2"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
       database:
         condition: service_healthy

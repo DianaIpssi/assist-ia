@@ -16,28 +16,17 @@ class AvailabilitySlotRepository extends ServiceEntityRepository
         parent::__construct($registry, AvailabilitySlot::class);
     }
 
-    //    /**
-    //     * @return AvailabilitySlot[] Returns an array of AvailabilitySlot objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('a')
-    //            ->andWhere('a.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('a.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?AvailabilitySlot
-    //    {
-    //        return $this->createQueryBuilder('a')
-    //            ->andWhere('a.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    /** Fonction qui retourne les créneaux disponibles à venir. */
+    public function findAvailableUpcoming(int $limit = 20): array
+    {
+        return $this->createQueryBuilder('s')
+            ->andWhere('s.isAvailable = :available')
+            ->andWhere('s.startAt >= :now')
+            ->setParameter('available', true)
+            ->setParameter('now', new \DateTimeImmutable())
+            ->orderBy('s.startAt', 'ASC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
 }

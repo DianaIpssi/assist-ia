@@ -16,7 +16,7 @@ class PropertyRepository extends ServiceEntityRepository
         parent::__construct($registry, Property::class);
     }
 
-    /** @return Property[] */
+    /** Fonction qui retourne tous les biens publiés. */
     public function findPublished(): array
     {
         return $this->createQueryBuilder('p')
@@ -27,7 +27,7 @@ class PropertyRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    /** @return Property[] */
+    /** Fonction qui cherche les biens publiés sous un budget max. */
     public function findPublishedByMaxBudget(int $budget): array
     {
         return $this->createQueryBuilder('p')
@@ -40,7 +40,7 @@ class PropertyRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    /** @return Property[] */
+    /** Fonction qui cherche les biens publiés par mot-clé dans le titre. */
     public function findPublishedByTitleKeyword(string $keyword): array
     {
         return $this->createQueryBuilder('p')
@@ -49,6 +49,33 @@ class PropertyRepository extends ServiceEntityRepository
             ->setParameter('status', Property::STATUS_PUBLISHED)
             ->setParameter('keyword', '%'.strtolower($keyword).'%')
             ->orderBy('p.price', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /** Fonction qui filtre les biens publiés par budget, ville et type. */
+    public function findPublishedByFilters(?int $budget, ?string $city, ?string $keyword): array
+    {
+        $qb = $this->createQueryBuilder('p')
+            ->andWhere('p.status = :status')
+            ->setParameter('status', Property::STATUS_PUBLISHED);
+
+        if ($budget !== null) {
+            $qb->andWhere('p.price <= :budget')
+                ->setParameter('budget', $budget);
+        }
+
+        if ($city !== null && $city !== '') {
+            $qb->andWhere('LOWER(p.city) LIKE :city')
+                ->setParameter('city', '%'.strtolower($city).'%');
+        }
+
+        if ($keyword !== null && $keyword !== '') {
+            $qb->andWhere('(LOWER(p.title) LIKE :keyword OR LOWER(p.description) LIKE :keyword)')
+                ->setParameter('keyword', '%'.strtolower($keyword).'%');
+        }
+
+        return $qb->orderBy('p.price', 'ASC')
             ->getQuery()
             ->getResult();
     }

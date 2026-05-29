@@ -11,6 +11,7 @@ use Symfony\Component\Routing\Attribute\Route;
 final class AddressController extends AbstractController
 {
     #[Route('/api/address/search', name: 'api_address_search', methods: ['GET'])]
+    /** Fonction qui recherche une adresse via l'API gouvernementale. */
     public function search(Request $request, AddressApiService $addressApiService): JsonResponse
     {
         $query = trim((string) $request->query->get('q', ''));

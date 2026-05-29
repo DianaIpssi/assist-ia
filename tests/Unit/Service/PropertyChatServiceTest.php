@@ -3,7 +3,9 @@
 namespace App\Tests\Unit\Service;
 
 use App\Entity\Property;
+use App\Repository\ChatMessageRepository;
 use App\Repository\PropertyRepository;
+use App\Service\OllamaChatService;
 use App\Service\PropertyChatService;
 use PHPUnit\Framework\TestCase;
 
@@ -11,8 +13,7 @@ class PropertyChatServiceTest extends TestCase
 {
     public function testExtractBudgetFromMessage(): void
     {
-        $repository = $this->createMock(PropertyRepository::class);
-        $service = new PropertyChatService($repository);
+        $service = $this->createService($this->createMock(PropertyRepository::class));
 
         $this->assertSame(150000, $service->extractBudget('mon budget est 150000 euros'));
         $this->assertNull($service->extractBudget('bonjour'));
@@ -31,7 +32,7 @@ class PropertyChatServiceTest extends TestCase
             ->with('t2')
             ->willReturn([$property]);
 
-        $service = new PropertyChatService($repository);
+        $service = $this->createService($repository);
         $reply = $service->buildReply('je cherche un T2');
 
         $this->assertStringContainsString('T2 avec balcon', $reply);
@@ -40,11 +41,11 @@ class PropertyChatServiceTest extends TestCase
     public function testBuildReplyWithoutBudget(): void
     {
         $repository = $this->createMock(PropertyRepository::class);
-        $service = new PropertyChatService($repository);
+        $service = $this->createService($repository);
 
         $this->assertSame(
             'Quel est ton budget maximum ? (ex : 150000 €)',
-            $service->buildReply('je cherche un appartement')
+            $service->buildReply('bonjour, je débute ma recherche')
         );
     }
 
@@ -60,7 +61,7 @@ class PropertyChatServiceTest extends TestCase
             ->with(150000)
             ->willReturn([$property]);
 
-        $service = new PropertyChatService($repository);
+        $service = $this->createService($repository);
         $reply = $service->buildReply('budget 150000');
 
         $this->assertStringContainsString('T2 centre-ville', $reply);
@@ -74,11 +75,21 @@ class PropertyChatServiceTest extends TestCase
             ->with(50000)
             ->willReturn([]);
 
-        $service = new PropertyChatService($repository);
+        $service = $this->createService($repository);
 
         $this->assertSame(
             'Je n\'ai trouvé aucun bien publié sous 50000 €.',
             $service->buildReply('50000 max')
         );
+    }
+
+    private function createService(PropertyRepository $repository): PropertyChatService
+    {
+        $ollama = $this->createMock(OllamaChatService::class);
+        $ollama->method('isAvailable')->willReturn(false);
+
+        $chatRepository = $this->createMock(ChatMessageRepository::class);
+
+        return new PropertyChatService($repository, $ollama, $chatRepository);
     }
 }

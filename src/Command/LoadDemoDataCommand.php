@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Entity\Agent;
+use App\Entity\AvailabilitySlot;
 use App\Entity\Property;
 use App\Repository\PropertyRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -66,6 +67,7 @@ class LoadDemoDataCommand extends Command
         parent::__construct();
     }
 
+    /** Fonction qui charge les comptes et données de démonstration. */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
@@ -113,6 +115,20 @@ class LoadDemoDataCommand extends Command
                 ->setSurface($data['surface'])
                 ->setRooms($data['rooms'])
                 ->setBedrooms($data['bedrooms']);
+        }
+
+        if ($this->entityManager->getRepository(AvailabilitySlot::class)->count([]) === 0) {
+            foreach ([1, 2, 3, 5] as $dayOffset) {
+                $start = (new \DateTimeImmutable())->modify(sprintf('+%d days', $dayOffset))->setTime(10, 0);
+                $slot = (new AvailabilitySlot())
+                    ->setAgent($agent)
+                    ->setStartAt($start)
+                    ->setEndAt($start->modify('+1 hour'))
+                    ->setIsAvailable(true)
+                    ->setNote('Visite bien');
+
+                $this->entityManager->persist($slot);
+            }
         }
 
         $this->entityManager->flush();

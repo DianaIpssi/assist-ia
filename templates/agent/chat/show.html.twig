@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Conversation - Assist'IA{% endblock %}
+
+{% block body %}
+<div class="max-w-3xl mx-auto space-y-6">
+    <div class="flex items-center justify-between">
+        <h1 class="text-2xl font-bold">Conversation client</h1>
+        <a href="{{ path('agent_chats') }}" class="text-sm text-rose-400 hover:underline">← Retour</a>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4">
+        {% for message in messages %}
+            <div class="flex {{ message.role == 'user' ? 'justify-end' : 'justify-start' }}">
+                <div class="max-w-[80%] rounded-xl px-4 py-2 text-sm {{ message.role == 'user' ? 'bg-rose-400 text-white' : 'bg-gray-100 text-gray-800' }}">
+                    <p class="text-xs opacity-70 mb-1">{{ message.role == 'user' ? 'Client' : 'Assistant' }} · {{ message.createdAt|date('d/m H:i') }}</p>
+                    <p class="whitespace-pre-wrap">{{ message.content }}</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

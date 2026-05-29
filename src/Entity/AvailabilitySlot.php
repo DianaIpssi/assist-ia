@@ -25,6 +25,10 @@ class AvailabilitySlot
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $note = null;
 
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Agent $agent = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -72,6 +76,18 @@ class AvailabilitySlot
     public function setNote(?string $note): static
     {
         $this->note = $note;
+
+        return $this;
+    }
+
+    public function getAgent(): ?Agent
+    {
+        return $this->agent;
+    }
+
+    public function setAgent(?Agent $agent): static
+    {
+        $this->agent = $agent;
 
         return $this;
     }
