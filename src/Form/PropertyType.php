@@ -21,6 +21,10 @@ class PropertyType extends AbstractType
             ->add('description', TextareaType::class, [
                 'required' => false,
             ])
+            ->add('imageUrl', TextType::class, [
+                'required' => false,
+                'label' => 'URL de l\'image',
+            ])
             ->add('city', TextType::class, [
                 'required' => false,
             ])

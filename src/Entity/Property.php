@@ -61,6 +61,10 @@ class Property
     #[ORM\Column(length: 255)]
     private ?string $draft = 'yes';
 
+    #[ORM\Column(length: 500, nullable: true)]
+    #[Assert\Url(requireTld: false)]
+    private ?string $imageUrl = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -202,5 +206,22 @@ class Property
         $this->draft = $draft;
 
         return $this;
+    }
+
+    public function getImageUrl(): ?string
+    {
+        return $this->imageUrl;
+    }
+
+    public function setImageUrl(?string $imageUrl): static
+    {
+        $this->imageUrl = $imageUrl;
+
+        return $this;
+    }
+
+    public function getDisplayImageUrl(): string
+    {
+        return $this->imageUrl ?? 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&q=80';
     }
 }
