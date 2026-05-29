@@ -1,34 +1,44 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Property{% endblock %}
+{% block title %}Detail bien - Assist'IA{% endblock %}
 
 {% block body %}
-    <h1>Property</h1>
+<div class="max-w-4xl mx-auto py-8 space-y-6">
+    <section class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 md:p-8">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+            <div>
+                <p class="text-sm text-gray-500">Detail annonce</p>
+                <h2 class="text-3xl font-bold">{{ property.title }}</h2>
+            </div>
+            <div class="flex gap-3">
+                <a href="{{ path('app_property_index') }}" class="px-4 py-2 rounded-lg bg-gray-100 text-gray-900 font-semibold hover:bg-gray-200">
+                    Retour liste
+                </a>
+                <a href="{{ path('app_property_edit', {'id': property.id}) }}" class="px-4 py-2 rounded-lg bg-rose-400 text-white font-semibold hover:bg-rose-500">
+                    Modifier
+                </a>
+            </div>
+        </div>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ property.id }}</td>
-            </tr>
-            <tr>
-                <th>Title</th>
-                <td>{{ property.title }}</td>
-            </tr>
-            <tr>
-                <th>Price</th>
-                <td>{{ property.price }}</td>
-            </tr>
-            <tr>
-                <th>Description</th>
-                <td>{{ property.description }}</td>
-            </tr>
-        </tbody>
-    </table>
+        <div class="grid md:grid-cols-2 gap-5">
+            <article class="rounded-xl border border-gray-100 p-4 bg-white">
+                <p class="text-sm text-gray-500">ID</p>
+                <p class="text-lg font-semibold mt-1">{{ property.id }}</p>
+            </article>
+            <article class="rounded-xl border border-gray-100 p-4 bg-white">
+                <p class="text-sm text-gray-500">Prix</p>
+                <p class="text-lg font-semibold mt-1">{{ property.price }} EUR</p>
+            </article>
+            <article class="md:col-span-2 rounded-xl border border-gray-100 p-4 bg-white">
+                <p class="text-sm text-gray-500">Description</p>
+                <p class="mt-1 text-gray-800">{{ property.description ?: 'Aucune description.' }}</p>
+            </article>
+        </div>
+    </section>
 
-    <a href="{{ path('app_property_index') }}">back to list</a>
-
-    <a href="{{ path('app_property_edit', {'id': property.id}) }}">edit</a>
-
-    {{ include('property/_delete_form.html.twig') }}
+    <section class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+        <h3 class="text-lg font-semibold text-rose-500 mb-3">Zone de suppression</h3>
+        {{ include('property/_delete_form.html.twig') }}
+    </section>
+</div>
 {% endblock %}

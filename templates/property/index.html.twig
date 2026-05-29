@@ -1,39 +1,73 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Property index{% endblock %}
+{% block title %}Mes biens - Assist'IA{% endblock %}
 
 {% block body %}
-    <h1>Property index</h1>
+<div class="max-w-7xl mx-auto py-8 space-y-6">
+    <section class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 md:p-8">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+                <p class="text-sm text-gray-500">Espace Agent</p>
+                <h2 class="text-3xl font-bold mt-1">Mes biens immobiliers</h2>
+                <p class="text-gray-600 mt-2">Retrouve toutes tes annonces et gere-les facilement.</p>
+            </div>
+            <div class="flex gap-3">
+                <a href="{{ path('agent_dashboard') }}" class="px-4 py-2 rounded-lg bg-gray-100 text-gray-900 font-semibold hover:bg-gray-200">
+                    Dashboard
+                </a>
+                <a href="{{ path('app_property_new') }}" class="px-4 py-2 rounded-lg bg-rose-400 text-white font-semibold hover:bg-rose-500">
+                    + Nouveau bien
+                </a>
+            </div>
+        </div>
+    </section>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Title</th>
-                <th>Price</th>
-                <th>Description</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for property in properties %}
-            <tr>
-                <td>{{ property.id }}</td>
-                <td>{{ property.title }}</td>
-                <td>{{ property.price }}</td>
-                <td>{{ property.description }}</td>
-                <td>
-                    <a href="{{ path('app_property_show', {'id': property.id}) }}">show</a>
-                    <a href="{{ path('app_property_edit', {'id': property.id}) }}">edit</a>
-                </td>
-            </tr>
+    <section class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+        {% if properties is not empty %}
+            <div class="overflow-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="text-sm text-gray-500 border-b">
+                            <th class="py-3 pr-4">ID</th>
+                            <th class="py-3 pr-4">Titre</th>
+                            <th class="py-3 pr-4">Prix</th>
+                            <th class="py-3 pr-4">Description</th>
+                            <th class="py-3 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for property in properties %}
+                        <tr class="border-b last:border-b-0">
+                            <td class="py-3 pr-4 text-sm text-gray-500">{{ property.id }}</td>
+                            <td class="py-3 pr-4 font-semibold">{{ property.title }}</td>
+                            <td class="py-3 pr-4">{{ property.price }} EUR</td>
+                            <td class="py-3 pr-4 text-gray-600">
+                                {{ property.description ? property.description|slice(0, 90) ~ (property.description|length > 90 ? '...' : '') : '-' }}
+                            </td>
+                            <td class="py-3 text-right">
+                                <div class="inline-flex gap-2">
+                                    <a href="{{ path('app_property_show', {'id': property.id}) }}" class="px-3 py-1.5 rounded-md bg-gray-100 text-gray-800 text-sm font-medium hover:bg-gray-200">
+                                        Voir
+                                    </a>
+                                    <a href="{{ path('app_property_edit', {'id': property.id}) }}" class="px-3 py-1.5 rounded-md bg-rose-400 text-white text-sm font-medium hover:bg-rose-500">
+                                        Modifier
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         {% else %}
-            <tr>
-                <td colspan="5">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-
-    <a href="{{ path('app_property_new') }}">Create new</a>
+            <div class="text-center py-10">
+                <p class="text-lg font-semibold">Aucun bien pour le moment</p>
+                <p class="text-gray-600 mt-2">Commence par creer ta premiere annonce.</p>
+                <a href="{{ path('app_property_new') }}" class="inline-block mt-4 px-4 py-2 rounded-lg bg-rose-400 text-white font-semibold hover:bg-rose-500">
+                    Creer un bien
+                </a>
+            </div>
+        {% endif %}
+    </section>
+</div>
 {% endblock %}

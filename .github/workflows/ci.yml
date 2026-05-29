@@ -19,6 +19,7 @@ jobs:
           php-version: "8.3"
           tools: composer
           coverage: none
+          extensions: pdo_sqlite, intl
 
       - name: Validate composer.json
         run: composer validate --no-interaction --no-check-publish
@@ -29,6 +30,20 @@ jobs:
       - name: Symfony console check
         run: php bin/console --version
 
-      - name: Lint YAML (config)
+      - name: Lint YAML
         run: php bin/console lint:yaml config --parse-tags
 
+      - name: Lint Twig
+        run: php bin/console lint:twig templates
+
+      - name: Lint container
+        run: php bin/console lint:container
+
+      - name: Security audit
+        run: composer audit --no-interaction || true
+
+      - name: Prepare test environment
+        run: mkdir -p var && php bin/console doctrine:schema:create --env=test --no-interaction
+
+      - name: Run PHPUnit
+        run: php bin/phpunit

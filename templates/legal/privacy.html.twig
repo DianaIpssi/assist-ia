@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Politique de confidentialité{% endblock %}
+
+{% block body %}
+<div class="max-w-3xl mx-auto prose">
+    <h1 class="text-3xl font-bold mb-4">Politique de confidentialité</h1>
+
+    <p class="text-gray-600 mb-6">
+        Assist'IA collecte uniquement les données nécessaires à la mise en relation avec un agent immobilier :
+        nom, email et informations de recherche immobilière.
+    </p>
+
+    <h2 class="text-xl font-semibold mt-6 mb-2">Vos droits (RGPD)</h2>
+    <ul class="list-disc pl-6 text-gray-700 space-y-2">
+        <li>Droit d'accès et de rectification de vos données personnelles.</li>
+        <li>Droit à l'effacement : contactez votre agent ou l'administrateur pour supprimer votre compte.</li>
+        <li>Les mots de passe sont stockés de manière sécurisée (hachage bcrypt/Argon2).</li>
+        <li>Les données ne sont pas revendues à des tiers.</li>
+    </ul>
+
+    <p class="mt-8">
+        <a href="{{ path('app_home') }}" class="text-rose-400 hover:underline">Retour à l'accueil</a>
+    </p>
+</div>
+{% endblock %}

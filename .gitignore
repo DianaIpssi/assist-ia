@@ -41,3 +41,6 @@ build/
 /public/assets/
 /assets/vendor/
 ###< symfony/asset-mapper ###
+
+# Documentation locale (rendus PDF sur Teams uniquement)
+/docs/

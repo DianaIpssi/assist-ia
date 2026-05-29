@@ -8,7 +8,7 @@
 
     <div class="grid md:grid-cols-3 gap-6">
         {% for property in properties %}
-            <div class="bg-white shadow rounded-2xl p-6">
+            <div class="bg-white border border-gray-100 shadow-sm rounded-2xl p-6 flex flex-col min-h-[220px]">
                 <h2 class="text-xl font-bold mb-2">{{ property.title }}</h2>
 
                 {% if property.description %}
@@ -16,6 +16,12 @@
                 {% endif %}
 
                 <p class="font-semibold mt-2">{{ property.price }} €</p>
+                <div class="mt-auto pt-4">
+                    <a href="{{ path('public_property_show', {'id': property.id}) }}"
+                       class="inline-flex items-center justify-center px-4 h-11 rounded-lg bg-rose-400 text-white font-semibold leading-none hover:bg-rose-500">
+                        Voir le detail
+                    </a>
+                </div>
             </div>
         {% else %}
             <p>Aucun bien pour le moment.</p>

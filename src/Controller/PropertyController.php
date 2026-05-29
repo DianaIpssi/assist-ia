@@ -30,6 +30,10 @@ final class PropertyController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $user = $this->getUser();
+            if ($user instanceof \App\Entity\Agent) {
+                $property->setAgent($user);
+            }
             $entityManager->persist($property);
             $entityManager->flush();
 

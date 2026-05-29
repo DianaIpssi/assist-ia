@@ -5,19 +5,27 @@ namespace App\Entity;
 use App\Repository\PropertyRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PropertyRepository::class)]
 class Property
 {
+    public const STATUS_DRAFT = 'draft';
+    public const STATUS_PUBLISHED = 'published';
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 255)]
     private ?string $title = null;
 
     #[ORM\Column]
+    #[Assert\NotBlank]
+    #[Assert\Positive]
     private ?int $price = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
@@ -28,25 +36,30 @@ class Property
     private ?Agent $agent = null;
 
     #[ORM\Column(length: 120, nullable: true)]
+    #[Assert\Length(max: 120)]
     private ?string $city = null;
 
     #[ORM\Column(length: 20, nullable: true)]
+    #[Assert\Length(max: 20)]
     private ?string $postalCode = null;
 
     #[ORM\Column(nullable: true)]
+    #[Assert\Positive]
     private ?int $surface = null;
 
     #[ORM\Column(nullable: true)]
+    #[Assert\Positive]
     private ?int $rooms = null;
 
     #[ORM\Column(nullable: true)]
+    #[Assert\Positive]
     private ?int $bedrooms = null;
 
     #[ORM\Column(length: 30)]
-    private ?string $status = null;
+    private ?string $status = self::STATUS_DRAFT;
 
     #[ORM\Column(length: 255)]
-    private ?string $draft = null;
+    private ?string $draft = 'yes';
 
     public function getId(): ?int
     {
@@ -169,8 +182,14 @@ class Property
     public function setStatus(string $status): static
     {
         $this->status = $status;
+        $this->draft = $status === self::STATUS_PUBLISHED ? 'no' : 'yes';
 
         return $this;
+    }
+
+    public function isPublished(): bool
+    {
+        return $this->status === self::STATUS_PUBLISHED;
     }
 
     public function getDraft(): ?string

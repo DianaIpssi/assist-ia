@@ -1,13 +1,25 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit Property{% endblock %}
+{% block title %}Modifier bien - Assist'IA{% endblock %}
 
 {% block body %}
-    <h1>Edit Property</h1>
+<div class="max-w-3xl mx-auto py-8 space-y-6">
+    <section class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 md:p-8">
+        <div class="flex items-center justify-between gap-3">
+            <h2 class="text-2xl font-bold">Modifier le bien #{{ property.id }}</h2>
+            <a href="{{ path('app_property_index') }}" class="px-4 py-2 rounded-lg bg-gray-100 text-gray-900 font-semibold hover:bg-gray-200">
+                Retour a la liste
+            </a>
+        </div>
 
-    {{ include('property/_form.html.twig', {'button_label': 'Update'}) }}
+        <div class="mt-6">
+            {{ include('property/_form.html.twig', {'button_label': 'Mettre a jour'}) }}
+        </div>
+    </section>
 
-    <a href="{{ path('app_property_index') }}">back to list</a>
-
-    {{ include('property/_delete_form.html.twig') }}
+    <section class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+        <h3 class="text-lg font-semibold text-rose-500 mb-3">Zone de suppression</h3>
+        {{ include('property/_delete_form.html.twig') }}
+    </section>
+</div>
 {% endblock %}

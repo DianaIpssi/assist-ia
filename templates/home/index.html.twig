@@ -4,7 +4,7 @@
 
 {% block body %}
 <div class="max-w-5xl mx-auto">
-    <div class="bg-white rounded-2xl shadow p-10">
+    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-10">
         <h1 class="text-4xl font-extrabold mb-4">
             Trouvez un bien sans stress.
         </h1>
@@ -16,11 +16,11 @@
 
         <div class="flex gap-4">
             <a href="/biens"
-               class="px-6 py-3 rounded-xl bg-indigo-600 text-white font-semibold hover:bg-indigo-700">
+               class="px-6 py-3 rounded-xl bg-rose-400 text-white font-semibold hover:bg-rose-500">
                 Voir les biens
             </a>
 
-            <a href="/property"
+            <a href="{{ path('app_login') }}"
                class="px-6 py-3 rounded-xl bg-gray-100 text-gray-900 font-semibold hover:bg-gray-200">
                 Espace agent
             </a>

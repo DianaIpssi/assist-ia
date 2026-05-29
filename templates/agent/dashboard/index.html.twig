@@ -1,20 +1,120 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello Agent/DashboardController!{% endblock %}
+{% block title %}Dashboard Agent - Assist'IA{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+<div class="max-w-7xl mx-auto py-8 space-y-8">
+    <section class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 md:p-8">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            <div>
+                <p class="text-sm text-gray-500">Espace Agent Immobilier</p>
+                <h2 class="text-3xl font-bold mt-1">Tableau de bord</h2>
+                <p class="text-gray-600 mt-2">
+                    Pilotez vos biens, vos brouillons et vos disponibilites depuis un seul endroit.
+                </p>
+            </div>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+            <div class="flex flex-wrap gap-3">
+                <a href="/property/new" class="px-4 py-2 rounded-lg bg-rose-400 text-white font-semibold hover:bg-rose-500">
+                    + Nouveau bien
+                </a>
+                <a href="/property" class="px-4 py-2 rounded-lg bg-gray-100 text-gray-900 font-semibold hover:bg-gray-200">
+                    Gerer mes biens
+                </a>
+                <a href="/biens" class="px-4 py-2 rounded-lg bg-gray-100 text-gray-900 font-semibold hover:bg-gray-200">
+                    Vue client
+                </a>
+            </div>
+        </div>
+    </section>
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>/var/www/html/src/Controller/Agent/DashboardController.php</code></li>
-        <li>Your template at <code>/var/www/html/templates/agent/dashboard/index.html.twig</code></li>
-    </ul>
+    <section class="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        <article class="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+            <p class="text-sm text-gray-500">Biens totaux</p>
+            <p class="text-3xl font-bold mt-2">{{ stats.totalProperties }}</p>
+        </article>
+
+        <article class="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+            <p class="text-sm text-gray-500">Biens publies</p>
+            <p class="text-3xl font-bold mt-2 text-rose-500">{{ stats.publishedProperties }}</p>
+        </article>
+
+        <article class="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+            <p class="text-sm text-gray-500">Brouillons</p>
+            <p class="text-3xl font-bold mt-2 text-rose-500">{{ stats.draftProperties }}</p>
+        </article>
+
+        <article class="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+            <p class="text-sm text-gray-500">Creneaux totaux</p>
+            <p class="text-3xl font-bold mt-2">{{ stats.totalSlots }}</p>
+        </article>
+
+        <article class="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+            <p class="text-sm text-gray-500">Creneaux disponibles</p>
+            <p class="text-3xl font-bold mt-2 text-rose-600">{{ stats.availableSlots }}</p>
+        </article>
+    </section>
+
+    <section class="grid lg:grid-cols-3 gap-6">
+        <article class="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xl font-semibold">Derniers biens ajoutes</h3>
+                <a href="/property" class="text-sm font-medium text-rose-600 hover:text-rose-700">Voir tout</a>
+            </div>
+
+            {% if latestProperties is not empty %}
+                <div class="overflow-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="text-sm text-gray-500 border-b">
+                                <th class="py-2 pr-3">Titre</th>
+                                <th class="py-2 pr-3">Ville</th>
+                                <th class="py-2 pr-3">Prix</th>
+                                <th class="py-2 pr-3">Statut</th>
+                                <th class="py-2 text-right">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for property in latestProperties %}
+                                <tr class="border-b last:border-b-0">
+                                    <td class="py-3 pr-3 font-medium">{{ property.title }}</td>
+                                    <td class="py-3 pr-3">{{ property.city ?: '-' }}</td>
+                                    <td class="py-3 pr-3">{{ property.price }} EUR</td>
+                                    <td class="py-3 pr-3">
+                                        <span class="inline-flex px-2 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700">
+                                            {{ property.status ?: 'n/a' }}
+                                        </span>
+                                    </td>
+                                    <td class="py-3 text-right">
+                                        <a href="/property/{{ property.id }}/edit" class="text-rose-600 hover:text-rose-700 text-sm font-medium">
+                                            Modifier
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-gray-600">Aucun bien enregistre pour le moment.</p>
+            {% endif %}
+        </article>
+
+        <article class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4">
+            <h3 class="text-xl font-semibold">Actions rapides</h3>
+            <a href="/property/new" class="block w-full px-4 py-3 rounded-lg bg-rose-400 text-white font-semibold text-center hover:bg-rose-500">
+                Creer une annonce
+            </a>
+            <a href="/property" class="block w-full px-4 py-3 rounded-lg bg-gray-100 text-gray-900 font-semibold text-center hover:bg-gray-200">
+                Ouvrir le back-office biens
+            </a>
+            <a href="http://localhost:8081" target="_blank" rel="noreferrer" class="block w-full px-4 py-3 rounded-lg bg-gray-100 text-gray-900 font-semibold text-center hover:bg-gray-200">
+                Ouvrir phpMyAdmin
+            </a>
+            <p class="text-sm text-gray-500">
+                Astuce : utilise la vue client pour verifier que tes annonces et le chatbot s'affichent correctement.
+            </p>
+        </article>
+    </section>
 </div>
 {% endblock %}

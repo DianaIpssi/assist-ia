@@ -5,10 +5,14 @@ namespace App\Entity;
 use App\Repository\AgentRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: AgentRepository::class)]
-class Agent
+class Agent implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -21,14 +25,21 @@ class Agent
     #[ORM\OneToMany(targetEntity: Property::class, mappedBy: 'agent')]
     private Collection $properties;
 
-    #[ORM\Column(length: 180)]
+    #[ORM\Column(length: 180, unique: true)]
+    #[Assert\NotBlank]
+    #[Assert\Email]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
     private ?string $fullName = null;
 
     #[ORM\Column(length: 255)]
     private ?string $password = null;
+
+    /** @var list<string> */
+    #[ORM\Column(type: Types::JSON)]
+    private array $roles = ['ROLE_AGENT'];
 
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
@@ -36,6 +47,7 @@ class Agent
     public function __construct()
     {
         $this->properties = new ArrayCollection();
+        $this->createdAt = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -64,7 +76,6 @@ class Agent
     public function removeProperty(Property $property): static
     {
         if ($this->properties->removeElement($property)) {
-            // set the owning side to null (unless already changed)
             if ($property->getAgent() === $this) {
                 $property->setAgent(null);
             }
@@ -83,6 +94,11 @@ class Agent
         $this->email = $email;
 
         return $this;
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->email;
     }
 
     public function getFullName(): ?string
@@ -107,6 +123,29 @@ class Agent
         $this->password = $password;
 
         return $this;
+    }
+
+    /** @return list<string> */
+    public function getRoles(): array
+    {
+        $roles = $this->roles;
+        if (!\in_array('ROLE_AGENT', $roles, true)) {
+            $roles[] = 'ROLE_AGENT';
+        }
+
+        return array_values(array_unique($roles));
+    }
+
+    /** @param list<string> $roles */
+    public function setRoles(array $roles): static
+    {
+        $this->roles = $roles;
+
+        return $this;
+    }
+
+    public function eraseCredentials(): void
+    {
     }
 
     public function getCreatedAt(): ?\DateTimeImmutable
