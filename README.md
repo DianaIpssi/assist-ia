@@ -2,8 +2,6 @@
 
 Application Symfony full-stack de mise en relation entre clients et agents immobiliers, avec chatbot de recherche par budget et autocomplétion d'adresses via l'API gouvernementale française.
 
-![CI Symfony](https://github.com/REPLACE_WITH_YOUR_USERNAME/assist-ia/actions/workflows/ci.yml/badge.svg)
-
 ## Prérequis
 
 - Docker et Docker Compose
@@ -47,7 +45,7 @@ symfony serve
 
 - Catalogue public des biens publiés (`/biens`)
 - Chatbot de recherche par budget (`POST /api/chat`)
-- Autocomplétion d'adresses via l'[API Adresse data.gouv.fr](https://adresse.data.gouv.fr/outils/api) (endpoint : `GET /search/?q=...`)
+- Autocomplétion d'adresses via l'API Adresse (data.gouv.fr)
 - Espace agent : dashboard, CRUD biens, statut brouillon/publié
 - Back-office EasyAdmin (`/admin`, accès admin)
 - Authentification sécurisée (hachage bcrypt/Argon2, CSRF, limitation des tentatives de connexion)
