@@ -1,96 +1,46 @@
 # Assist'IA
 
-Application Symfony full-stack de mise en relation entre clients et agents immobiliers, avec chatbot de recherche par budget et autocomplétion d'adresses via l'API gouvernementale française.
+Projet fil rouge CDA - application immobilière en Symfony.
 
-## Prérequis
+Les visiteurs peuvent voir les biens disponibles et utiliser un chatbot pour chercher selon leur budget.
+Les agents immobiliers peuvent se connecter pour gérer leurs annonces.
 
-- Docker et Docker Compose
-- PHP 8.3+ et Composer (pour le développement local sans Docker)
+## Installation
 
-## Lancement avec Docker (recommandé)
+Il faut Docker Desktop installé et lancé.
 
 ```bash
 docker compose up --build
 ```
 
-Services disponibles :
+Ensuite aller sur http://localhost:8000
 
-| Service | URL |
-|---------|-----|
-| Application | http://localhost:8000 |
-| phpMyAdmin | http://localhost:8081 |
-| MySQL | localhost:3307 |
-
-Au premier démarrage, le conteneur PHP exécute automatiquement les migrations Doctrine et charge les données de démonstration.
+phpMyAdmin : http://localhost:8081 (user root / mdp root)
 
 ## Comptes de test
 
-| Rôle | Email | Mot de passe |
-|------|-------|--------------|
-| Agent | agent@assist-ia.fr | Agent123! |
-| Admin | admin@assist-ia.fr | Admin123! |
-
-## Développement local (sans Docker)
-
-```bash
-composer install
-cp .env .env.local
-# Configurer DATABASE_URL vers votre MySQL local
-php bin/console doctrine:migrations:migrate
-php bin/console app:load-demo-data
-symfony serve
-```
-
-## Fonctionnalités (version bêta – Jalon 5)
-
-- Catalogue public des biens publiés (`/biens`)
-- Chatbot de recherche par budget (`POST /api/chat`)
-- Autocomplétion d'adresses via l'API Adresse (data.gouv.fr)
-- Espace agent : dashboard, CRUD biens, statut brouillon/publié
-- Back-office EasyAdmin (`/admin`, accès admin)
-- Authentification sécurisée (hachage bcrypt/Argon2, CSRF, limitation des tentatives de connexion)
-- Politique de confidentialité RGPD (`/politique-confidentialite`)
+- **Agent** : agent@assist-ia.fr / Agent123!
+- **Admin** : admin@assist-ia.fr / Admin123!
 
 ## Tests
 
 ```bash
-composer install
 php bin/phpunit
 ```
 
-La suite comprend des tests unitaires (services) et fonctionnels (contrôleurs, sécurité, API).
+J'ai aussi mis une CI sur GitHub Actions (dossier .github/workflows).
 
-## CI
+## Pages principales
 
-À chaque push sur `main`, GitHub Actions exécute :
+- `/biens` - liste des biens publiés
+- `/login` - connexion agent
+- `/agent` - tableau de bord agent
+- `/property` - gestion des biens (agent connecté)
+- `/admin` - back office EasyAdmin (admin)
+- `/politique-confidentialite` - page RGPD
 
-- validation Composer
-- lint YAML / Twig / container Symfony
-- audit de sécurité Composer
-- suite PHPUnit
+## API externe
 
-Voir `.github/workflows/ci.yml`.
+Autocomplétion d'adresse avec l'API du gouvernement (data.gouv.fr) sur le formulaire de création de bien.
 
-## Structure
-
-```
-src/
-  Controller/     # MVC : routes HTTP
-  Entity/         # Modèle Doctrine
-  Form/           # Formulaires Symfony
-  Repository/     # Accès aux données
-  Service/        # Logique métier (API adresse, chatbot)
-tests/
-  Unit/           # Tests unitaires
-  Functional/     # Tests fonctionnels WebTestCase
-docker/           # Configuration Nginx + PHP
-```
-
-## Tag de référence bêta
-
-Créer le tag de livraison Jalon 5 :
-
-```bash
-git tag -a v0.5-beta -m "Jalon 5 – version bêta Mai 2026"
-git push origin v0.5-beta
-```
+Tag jalon 5 : **v0.5-beta**
