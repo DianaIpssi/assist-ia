@@ -16,6 +16,25 @@ class PropertyChatServiceTest extends TestCase
 
         $this->assertSame(150000, $service->extractBudget('mon budget est 150000 euros'));
         $this->assertNull($service->extractBudget('bonjour'));
+        $this->assertNull($service->extractBudget('je cherche un T2'));
+    }
+
+    public function testBuildReplyForTypologySearch(): void
+    {
+        $property = (new Property())
+            ->setTitle('T2 avec balcon')
+            ->setPrice(180000)
+            ->setStatus(Property::STATUS_PUBLISHED);
+
+        $repository = $this->createMock(PropertyRepository::class);
+        $repository->method('findPublishedByTitleKeyword')
+            ->with('t2')
+            ->willReturn([$property]);
+
+        $service = new PropertyChatService($repository);
+        $reply = $service->buildReply('je cherche un T2');
+
+        $this->assertStringContainsString('T2 avec balcon', $reply);
     }
 
     public function testBuildReplyWithoutBudget(): void
@@ -24,7 +43,7 @@ class PropertyChatServiceTest extends TestCase
         $service = new PropertyChatService($repository);
 
         $this->assertSame(
-            'Quel est ton budget maximum ?',
+            'Quel est ton budget maximum ? (ex : 150000 €)',
             $service->buildReply('je cherche un appartement')
         );
     }

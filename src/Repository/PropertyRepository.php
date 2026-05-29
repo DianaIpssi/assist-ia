@@ -39,4 +39,17 @@ class PropertyRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /** @return Property[] */
+    public function findPublishedByTitleKeyword(string $keyword): array
+    {
+        return $this->createQueryBuilder('p')
+            ->andWhere('p.status = :status')
+            ->andWhere('LOWER(p.title) LIKE :keyword')
+            ->setParameter('status', Property::STATUS_PUBLISHED)
+            ->setParameter('keyword', '%'.strtolower($keyword).'%')
+            ->orderBy('p.price', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }

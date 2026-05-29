@@ -21,7 +21,7 @@ class ChatControllerTest extends DatabaseWebTestCase
 
         $this->assertResponseIsSuccessful();
         $payload = json_decode($client->getResponse()->getContent(), true, 512, JSON_THROW_ON_ERROR);
-        $this->assertSame('Quel est ton budget maximum ?', $payload['reply']);
+        $this->assertStringContainsString('Quel est ton budget maximum', $payload['reply']);
     }
 
     public function testChatReturnsPublishedPropertiesWithinBudget(): void
