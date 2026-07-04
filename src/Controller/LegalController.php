@@ -9,7 +9,7 @@ use Symfony\Component\Routing\Attribute\Route;
 final class LegalController extends AbstractController
 {
     #[Route('/politique-confidentialite', name: 'app_privacy')]
-    /** Fonction qui affiche la page de politique de confidentialité. */
+    // Fonction qui affiche la page de politique de confidentialité. 
     public function privacy(): Response
     {
         return $this->render('legal/privacy.html.twig');

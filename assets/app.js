@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 
+// Fonction qui active l'autocomplétion d'adresse sur les champs ville
 function initAddressAutocomplete() {
   const cityInputs = document.querySelectorAll('[data-address-autocomplete="city"]');
 
@@ -19,6 +20,7 @@ function initAddressAutocomplete() {
     let debounceTimer;
     let pendingController;
 
+    // Fonction qui trouve le champ code postal lié au champ ville
     const resolvePostalInput = () => {
       if (postalSelector) {
         const explicitPostalInput = document.querySelector(postalSelector);
@@ -37,6 +39,7 @@ function initAddressAutocomplete() {
       );
     };
 
+    // Fonction qui vide la liste des suggestions d'adresse
     const clearSuggestions = () => {
       suggestionsContainer.innerHTML = '';
     };
@@ -115,6 +118,7 @@ function initAddressAutocomplete() {
   });
 }
 
+// Fonction qui récupère ou crée l'identifiant de session du chat
 function getSessionId() {
   const key = 'assistia_chat_session';
   let sessionId = window.sessionStorage.getItem(key);
@@ -125,6 +129,7 @@ function getSessionId() {
   return sessionId;
 }
 
+// Fonction qui affiche la fenêtre de chat (composant React)
 function Chat({ embedded = false }) {
   const [messages, setMessages] = useState([
     { role: 'assistant', content: "Bonjour ! Indiquez votre budget ou le type de bien recherché (ex : T2, studio…)" }
@@ -140,6 +145,7 @@ function Chat({ embedded = false }) {
     }
   }, [messages]);
 
+  // Fonction qui envoie le message du visiteur à l'API chat
   async function sendMessage() {
     const text = input.trim();
     if (!text || loading) return;
@@ -168,6 +174,7 @@ function Chat({ embedded = false }) {
     }
   }
 
+  // Fonction qui envoie le message quand on appuie sur Entrée
   function onKeyDown(e) {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -175,8 +182,8 @@ function Chat({ embedded = false }) {
     }
   }
 
-  const width = embedded ? '100%' : 320;
-  const messagesHeight = embedded ? 280 : 220;
+  const width = embedded ? '100%' : 400;
+  const messagesHeight = embedded ? 380 : 360;
 
   return React.createElement(
     'div',
@@ -200,7 +207,7 @@ function Chat({ embedded = false }) {
       'div',
       {
         ref: listRef,
-        style: { height: messagesHeight, padding: 12, overflowY: 'auto', background: '#fafafa' }
+        style: { height: messagesHeight, padding: 12, overflowY: 'auto', overflowX: 'hidden', background: '#fafafa' }
       },
       messages.map((m, i) =>
         React.createElement(
@@ -217,13 +224,17 @@ function Chat({ embedded = false }) {
             'div',
             {
               style: {
-                maxWidth: '85%',
-                padding: '8px 10px',
+                maxWidth: '90%',
+                padding: '10px 12px',
                 borderRadius: 12,
                 background: m.role === 'user' ? '#f472b6' : 'white',
                 color: m.role === 'user' ? 'white' : '#111',
                 border: m.role === 'user' ? 'none' : '1px solid #eee',
                 whiteSpace: 'pre-wrap',
+                wordBreak: 'break-word',
+                overflowWrap: 'break-word',
+                fontSize: '14px',
+                lineHeight: '1.45',
               }
             },
             m.content
@@ -270,6 +281,7 @@ function Chat({ embedded = false }) {
   );
 }
 
+// Fonction qui démarre le chat React et l'autocomplétion adresse
 function bootstrapApp() {
   document.querySelectorAll('#react-chat').forEach((container) => {
     if (container.dataset.reactMounted === '1') {

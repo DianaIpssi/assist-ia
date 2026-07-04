@@ -6,17 +6,15 @@ use App\Entity\Appointment;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-/**
- * @extends ServiceEntityRepository<Appointment>
- */
 class AppointmentRepository extends ServiceEntityRepository
 {
+    // Fonction qui initialise l'objet
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Appointment::class);
     }
 
-    /** Fonction qui retourne les prochains RDV d'un agent. */
+    // Fonction qui retourne les prochains RDV d'un agent
     public function findUpcomingForAgent(int $agentId): array
     {
         return $this->createQueryBuilder('a')

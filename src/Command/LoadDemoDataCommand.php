@@ -3,9 +3,9 @@
 namespace App\Command;
 
 use App\Entity\Agent;
-use App\Entity\AvailabilitySlot;
 use App\Entity\Property;
 use App\Repository\PropertyRepository;
+use App\Service\AvailabilitySlotGeneratorService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -60,14 +60,16 @@ class LoadDemoDataCommand extends Command
         ],
     ];
 
+    // Fonction qui initialise l'objet
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly UserPasswordHasherInterface $passwordHasher,
+        private readonly AvailabilitySlotGeneratorService $slotGenerator,
     ) {
         parent::__construct();
     }
 
-    /** Fonction qui charge les comptes et données de démonstration. */
+    // Fonction qui exécute la commande console
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
@@ -117,21 +119,8 @@ class LoadDemoDataCommand extends Command
                 ->setBedrooms($data['bedrooms']);
         }
 
-        if ($this->entityManager->getRepository(AvailabilitySlot::class)->count([]) === 0) {
-            foreach ([1, 2, 3, 5] as $dayOffset) {
-                $start = (new \DateTimeImmutable())->modify(sprintf('+%d days', $dayOffset))->setTime(10, 0);
-                $slot = (new AvailabilitySlot())
-                    ->setAgent($agent)
-                    ->setStartAt($start)
-                    ->setEndAt($start->modify('+1 hour'))
-                    ->setIsAvailable(true)
-                    ->setNote('Visite bien');
-
-                $this->entityManager->persist($slot);
-            }
-        }
-
         $this->entityManager->flush();
+        $this->slotGenerator->ensureUpcomingSlots();
 
         $io->success('Données de démonstration chargées.');
         $io->listing([

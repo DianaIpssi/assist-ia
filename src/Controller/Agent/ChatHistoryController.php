@@ -10,7 +10,7 @@ use Symfony\Component\Routing\Attribute\Route;
 final class ChatHistoryController extends AbstractController
 {
     #[Route('/agent/chats', name: 'agent_chats')]
-    /** Fonction qui liste les conversations clients pour l'agent. */
+    // Fonction qui affiche la page demandée
     public function index(ChatMessageRepository $chatMessageRepository): Response
     {
         return $this->render('agent/chat/index.html.twig', [
@@ -19,7 +19,7 @@ final class ChatHistoryController extends AbstractController
     }
 
     #[Route('/agent/chats/{sessionId}', name: 'agent_chat_show')]
-    /** Fonction qui affiche une conversation chat en détail. */
+    // Fonction qui affiche le détail demandé
     public function show(string $sessionId, ChatMessageRepository $chatMessageRepository): Response
     {
         $messages = $chatMessageRepository->findBySessionId($sessionId);

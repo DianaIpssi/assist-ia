@@ -1,9 +1,7 @@
-/* Couleur principale */
 :root {
     --ea-color-primary: #4f46e5;
   }
   
-  /* Sidebar un peu plus clean */
   .sidebar {
     background: #0f172a !important;
   }
@@ -18,7 +16,6 @@
     color: white !important;
   }
   
-  /* Topbar */
   .content-header {
     border-bottom: 1px solid #1f2937;
   }

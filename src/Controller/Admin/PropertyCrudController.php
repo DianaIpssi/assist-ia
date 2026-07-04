@@ -17,6 +17,7 @@ class PropertyCrudController extends AbstractCrudController
         return Property::class;
     }
 
+    // Fonction qui configure l'affichage admin du CRUD
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
@@ -28,6 +29,7 @@ class PropertyCrudController extends AbstractCrudController
             ->setPageTitle(Crud::PAGE_DETAIL, 'Détail du bien');
     }
 
+    // Fonction qui définit les champs affichés en admin
     public function configureFields(string $pageName): iterable
     {
         return [

@@ -15,7 +15,7 @@ use Symfony\Component\Routing\Attribute\Route;
 final class CalendarController extends AbstractController
 {
     #[Route('/agent/calendrier', name: 'agent_calendar')]
-    /** Fonction qui affiche le calendrier et les RDV de l'agent. */
+    // Fonction qui affiche le calendrier et les RDV de l'agent. 
     public function index(
         AvailabilitySlotRepository $slotRepository,
         AppointmentRepository $appointmentRepository,
@@ -39,7 +39,7 @@ final class CalendarController extends AbstractController
     }
 
     #[Route('/agent/calendrier/nouveau', name: 'agent_calendar_new', methods: ['GET', 'POST'])]
-    /** Fonction qui ajoute un nouveau créneau de disponibilité. */
+    // Fonction qui ajoute un nouveau créneau de disponibilité. 
     public function newSlot(Request $request, EntityManagerInterface $entityManager): Response
     {
         $user = $this->getUser();

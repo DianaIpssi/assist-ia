@@ -41,21 +41,25 @@ class Appointment
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
+    // Fonction qui initialise l'objet
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
     }
 
+    // Fonction qui retourne l'identifiant
     public function getId(): ?int
     {
         return $this->id;
     }
 
+    // Fonction qui retourne l'agent
     public function getAgent(): ?Agent
     {
         return $this->agent;
     }
 
+    // Fonction qui définit l'agent
     public function setAgent(?Agent $agent): static
     {
         $this->agent = $agent;
@@ -63,11 +67,13 @@ class Appointment
         return $this;
     }
 
+    // Fonction qui retourne Slot
     public function getSlot(): ?AvailabilitySlot
     {
         return $this->slot;
     }
 
+    // Fonction qui définit Slot
     public function setSlot(?AvailabilitySlot $slot): static
     {
         $this->slot = $slot;
@@ -75,11 +81,13 @@ class Appointment
         return $this;
     }
 
+    // Fonction qui retourne le nom du client
     public function getClientName(): ?string
     {
         return $this->clientName;
     }
 
+    // Fonction qui définit le nom du client
     public function setClientName(string $clientName): static
     {
         $this->clientName = $clientName;
@@ -87,11 +95,13 @@ class Appointment
         return $this;
     }
 
+    // Fonction qui retourne l'email du client
     public function getClientEmail(): ?string
     {
         return $this->clientEmail;
     }
 
+    // Fonction qui définit l'email du client
     public function setClientEmail(string $clientEmail): static
     {
         $this->clientEmail = $clientEmail;
@@ -99,11 +109,13 @@ class Appointment
         return $this;
     }
 
+    // Fonction qui retourne Client Phone
     public function getClientPhone(): ?string
     {
         return $this->clientPhone;
     }
 
+    // Fonction qui définit Client Phone
     public function setClientPhone(?string $clientPhone): static
     {
         $this->clientPhone = $clientPhone;
@@ -111,11 +123,13 @@ class Appointment
         return $this;
     }
 
+    // Fonction qui retourne Message
     public function getMessage(): ?string
     {
         return $this->message;
     }
 
+    // Fonction qui définit Message
     public function setMessage(?string $message): static
     {
         $this->message = $message;
@@ -123,6 +137,7 @@ class Appointment
         return $this;
     }
 
+    // Fonction qui retourne Created At
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;

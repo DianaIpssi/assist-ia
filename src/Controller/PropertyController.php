@@ -15,7 +15,7 @@ use Symfony\Component\Routing\Attribute\Route;
 final class PropertyController extends AbstractController
 {
     #[Route(name: 'app_property_index', methods: ['GET'])]
-    /** Fonction qui liste tous les biens de l'agent. */
+    // Fonction qui liste tous les biens de l'agent. 
     public function index(PropertyRepository $propertyRepository): Response
     {
         return $this->render('property/index.html.twig', [
@@ -24,7 +24,7 @@ final class PropertyController extends AbstractController
     }
 
     #[Route('/new', name: 'app_property_new', methods: ['GET', 'POST'])]
-    /** Fonction qui crée un nouveau bien immobilier. */
+    // Fonction qui crée un nouveau bien immobilier. 
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $property = new Property();
@@ -49,7 +49,7 @@ final class PropertyController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_property_show', methods: ['GET'])]
-    /** Fonction qui affiche un bien côté agent. */
+    // Fonction qui affiche un bien côté agent. 
     public function show(Property $property): Response
     {
         return $this->render('property/show.html.twig', [
@@ -58,7 +58,7 @@ final class PropertyController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_property_edit', methods: ['GET', 'POST'])]
-    /** Fonction qui modifie un bien existant. */
+    // Fonction qui modifie un bien existant. 
     public function edit(Request $request, Property $property, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(PropertyType::class, $property);
@@ -77,7 +77,7 @@ final class PropertyController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_property_delete', methods: ['POST'])]
-    /** Fonction qui supprime un bien avec vérification CSRF. */
+    // Fonction qui supprime un bien avec vérification CSRF. 
     public function delete(Request $request, Property $property, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$property->getId(), $request->getPayload()->getString('_token'))) {

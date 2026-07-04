@@ -6,17 +6,15 @@ use App\Entity\ChatMessage;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-/**
- * @extends ServiceEntityRepository<ChatMessage>
- */
 class ChatMessageRepository extends ServiceEntityRepository
 {
+    // Fonction qui initialise l'objet
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, ChatMessage::class);
     }
 
-    /** Fonction qui liste les sessions de chat avec leur dernier message. */
+    // Fonction qui liste les conversations chat enregistrées
     public function findSessionSummaries(): array
     {
         $rows = $this->createQueryBuilder('c')
@@ -53,7 +51,7 @@ class ChatMessageRepository extends ServiceEntityRepository
         return $summaries;
     }
 
-    /** Fonction qui récupère tous les messages d'une session. */
+    // Fonction qui retourne les messages d'une conversation
     public function findBySessionId(string $sessionId): array
     {
         return $this->createQueryBuilder('c')

@@ -10,7 +10,7 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 final class SecurityController extends AbstractController
 {
     #[Route('/login', name: 'app_login')]
-    /** Fonction qui affiche le formulaire de connexion agent. */
+    // Fonction qui affiche le formulaire de connexion agent. 
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
         if ($this->getUser()) {
@@ -24,7 +24,7 @@ final class SecurityController extends AbstractController
     }
 
     #[Route('/logout', name: 'app_logout')]
-    /** Fonction qui déconnecte l'agent (géré par Symfony). */
+    // Fonction qui déconnecte l'agent (géré par Symfony). 
     public function logout(): void
     {
         throw new \LogicException('Intercepted by Symfony logout listener.');

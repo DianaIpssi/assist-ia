@@ -10,7 +10,7 @@ use Symfony\Component\Routing\Attribute\Route;
 final class HomeController extends AbstractController
 {
     #[Route('/', name: 'app_home')]
-    /** Fonction qui affiche la page d'accueil avec les biens récents. */
+    // Fonction qui affiche la page d'accueil avec les biens récents. 
     public function index(PropertyRepository $propertyRepository): Response
     {
         $featuredProperties = array_slice($propertyRepository->findPublished(), 0, 3);

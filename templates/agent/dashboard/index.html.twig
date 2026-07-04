@@ -10,8 +10,13 @@
                 <p class="text-sm text-gray-500">Espace Agent Immobilier</p>
                 <h2 class="text-3xl font-bold mt-1">Tableau de bord</h2>
                 <p class="text-gray-600 mt-2">
-                    Pilotez vos biens, vos brouillons et vos disponibilites depuis un seul endroit.
+                    Gérez vos annonces, vos rendez-vous clients et l'historique des conversations.
                 </p>
+                {% if isAdminView %}
+                    <p class="text-sm text-amber-700 mt-2 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2 inline-block">
+                        Vue administrateur — pour la gestion globale, utilisez <a href="{{ path('admin') }}" class="font-semibold underline">/admin</a>.
+                    </p>
+                {% endif %}
             </div>
 
             <div class="flex flex-wrap gap-3">
@@ -120,9 +125,11 @@
             <a href="/property" class="block w-full px-4 py-3 rounded-lg bg-gray-100 text-gray-900 font-semibold text-center hover:bg-gray-200">
                 Ouvrir le back-office biens
             </a>
-            <a href="http://localhost:8081" target="_blank" rel="noreferrer" class="block w-full px-4 py-3 rounded-lg bg-gray-100 text-gray-900 font-semibold text-center hover:bg-gray-200">
-                Ouvrir phpMyAdmin
-            </a>
+            {% if is_granted('ROLE_ADMIN') %}
+                <a href="{{ path('admin') }}" class="block w-full px-4 py-3 rounded-lg bg-gray-100 text-gray-900 font-semibold text-center hover:bg-gray-200">
+                    Administration (EasyAdmin)
+                </a>
+            {% endif %}
         </article>
     </section>
 </div>

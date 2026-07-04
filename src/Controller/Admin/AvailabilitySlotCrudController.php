@@ -4,8 +4,9 @@ namespace App\Controller\Admin;
 
 use App\Entity\AvailabilitySlot;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
-use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 
 class AvailabilitySlotCrudController extends AbstractCrudController
@@ -15,14 +16,13 @@ class AvailabilitySlotCrudController extends AbstractCrudController
         return AvailabilitySlot::class;
     }
 
-    /*
+    // Fonction qui définit les champs affichés en admin
     public function configureFields(string $pageName): iterable
     {
-        return [
-            IdField::new('id'),
-            TextField::new('title'),
-            TextEditorField::new('description'),
-        ];
+        yield AssociationField::new('agent', 'Agent');
+        yield DateTimeField::new('startAt', 'Début');
+        yield DateTimeField::new('endAt', 'Fin');
+        yield BooleanField::new('isAvailable', 'Disponible');
+        yield TextField::new('note', 'Note');
     }
-    */
 }

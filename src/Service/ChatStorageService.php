@@ -7,11 +7,12 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class ChatStorageService
 {
+    // Fonction qui initialise l'objet
     public function __construct(private readonly EntityManagerInterface $entityManager)
     {
     }
 
-    /** Fonction qui enregistre un message de chat en base de données. */
+    // Fonction qui enregistre un message de chat en base
     public function save(string $sessionId, string $role, string $content, ?string $clientName = null, ?string $clientEmail = null): void
     {
         $message = (new ChatMessage())

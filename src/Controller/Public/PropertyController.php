@@ -12,7 +12,7 @@ use Symfony\Component\Routing\Attribute\Route;
 final class PropertyController extends AbstractController
 {
     #[Route('/biens', name: 'public_property_index', methods: ['GET'])]
-    /** Fonction qui affiche le catalogue public des biens. */
+    // Fonction qui affiche le catalogue public des biens. 
     public function index(PropertyRepository $repository): Response
     {
         return $this->render('public/property/index.html.twig', [
@@ -21,7 +21,7 @@ final class PropertyController extends AbstractController
     }
 
     #[Route('/biens/{id}', name: 'public_property_show', methods: ['GET'])]
-    /** Fonction qui affiche le détail d'un bien publié. */
+    // Fonction qui affiche le détail d'un bien publié. 
     public function show(Property $property): Response
     {
         if (!$property->isPublished()) {

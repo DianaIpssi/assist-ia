@@ -7,6 +7,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class OllamaChatService
 {
+    // Fonction qui initialise l'objet
     public function __construct(
         private readonly HttpClientInterface $httpClient,
         private readonly bool $enabled,
@@ -15,13 +16,13 @@ class OllamaChatService
     ) {
     }
 
-    /** Fonction qui vérifie si Ollama est activé dans la config. */
+    // Fonction qui indique si Ollama est activé dans la config
     public function isEnabled(): bool
     {
         return $this->enabled && $this->baseUrl !== '' && $this->model !== '';
     }
 
-    /** Fonction qui teste si le serveur Ollama répond. */
+    // Fonction qui vérifie si Ollama répond
     public function isAvailable(): bool
     {
         if (!$this->isEnabled()) {
@@ -39,11 +40,7 @@ class OllamaChatService
         }
     }
 
-    /**
-     * Fonction qui envoie des messages à Ollama et récupère la réponse.
-     *
-     * @param list<array{role: string, content: string}> $messages
-     */
+    // Fonction qui envoie un message à Ollama et récupère la réponse
     public function chat(array $messages): ?string
     {
         if (!$this->isEnabled()) {

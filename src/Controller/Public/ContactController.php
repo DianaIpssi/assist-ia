@@ -11,7 +11,7 @@ use Symfony\Component\Routing\Attribute\Route;
 final class ContactController extends AbstractController
 {
     #[Route('/contact', name: 'public_contact')]
-    /** Fonction qui affiche et traite le formulaire de contact. */
+    // Fonction qui affiche et traite le formulaire de contact. 
     public function index(Request $request): Response
     {
         $form = $this->createForm(ContactType::class);

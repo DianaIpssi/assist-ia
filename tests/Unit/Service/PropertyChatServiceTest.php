@@ -3,7 +3,6 @@
 namespace App\Tests\Unit\Service;
 
 use App\Entity\Property;
-use App\Repository\ChatMessageRepository;
 use App\Repository\PropertyRepository;
 use App\Service\OllamaChatService;
 use App\Service\PropertyChatService;
@@ -54,6 +53,7 @@ class PropertyChatServiceTest extends TestCase
         $property = (new Property())
             ->setTitle('T2 centre-ville')
             ->setPrice(120000)
+            ->setCity('Lyon')
             ->setStatus(Property::STATUS_PUBLISHED);
 
         $repository = $this->createMock(PropertyRepository::class);
@@ -65,7 +65,7 @@ class PropertyChatServiceTest extends TestCase
         $reply = $service->buildReply('budget 150000');
 
         $this->assertStringContainsString('T2 centre-ville', $reply);
-        $this->assertStringContainsString('120000', $reply);
+        $this->assertStringContainsString('120 000', $reply);
     }
 
     public function testBuildReplyWhenNoPropertyMatches(): void
@@ -88,8 +88,6 @@ class PropertyChatServiceTest extends TestCase
         $ollama = $this->createMock(OllamaChatService::class);
         $ollama->method('isAvailable')->willReturn(false);
 
-        $chatRepository = $this->createMock(ChatMessageRepository::class);
-
-        return new PropertyChatService($repository, $ollama, $chatRepository);
+        return new PropertyChatService($repository, $ollama);
     }
 }

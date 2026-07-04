@@ -16,6 +16,9 @@
                 <a href="{{ path('public_contact') }}" class="text-gray-600 hover:text-rose-400">Contact</a>
                 {% if app.user %}
                     <a href="{{ path('agent_dashboard') }}" class="text-gray-600 hover:text-rose-400">Mon espace</a>
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <a href="{{ path('admin') }}" class="text-gray-600 hover:text-rose-400">Administration</a>
+                    {% endif %}
                     <a href="{{ path('app_logout') }}" class="text-gray-600 hover:text-rose-400">Déconnexion</a>
                 {% endif %}
             </nav>

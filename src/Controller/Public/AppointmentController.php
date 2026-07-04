@@ -4,6 +4,7 @@ namespace App\Controller\Public;
 
 use App\Entity\Appointment;
 use App\Form\AppointmentType;
+use App\Service\AppointmentMailerService;
 use App\Repository\AvailabilitySlotRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -14,11 +15,12 @@ use Symfony\Component\Routing\Attribute\Route;
 final class AppointmentController extends AbstractController
 {
     #[Route('/rdv', name: 'public_appointment')]
-    /** Fonction qui permet au client de réserver un créneau RDV. */
+    // Fonction qui permet au client de réserver un créneau RDV. 
     public function book(
         Request $request,
         AvailabilitySlotRepository $slotRepository,
         EntityManagerInterface $entityManager,
+        AppointmentMailerService $appointmentMailerService,
     ): Response {
         $availableSlots = $slotRepository->findAvailableUpcoming();
 
@@ -49,7 +51,10 @@ final class AppointmentController extends AbstractController
             $entityManager->persist($appointment);
             $entityManager->flush();
 
-            $this->addFlash('success', 'Votre rendez-vous a bien été enregistré. L\'agent vous confirmera par email.');
+            $appointmentMailerService->sendConfirmation($appointment);
+            $appointmentMailerService->notifyAgent($appointment);
+
+            $this->addFlash('success', 'Votre rendez-vous a bien été enregistré. Un email de confirmation vous a été envoyé.');
 
             return $this->redirectToRoute('public_appointment');
         }

@@ -7,15 +7,12 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class AddressApiService
 {
+    // Fonction qui initialise l'objet
     public function __construct(private readonly HttpClientInterface $httpClient)
     {
     }
 
-    /**
-     * Fonction qui interroge l'API adresse du gouvernement.
-     *
-     * @return array<int, array{label: string, city: string, postcode: string, lat: float, lon: float}>
-     */
+    // Fonction qui cherche une adresse via l'API gouvernementale
     public function search(string $query): array
     {
         $query = trim($query);

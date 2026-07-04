@@ -11,6 +11,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ContactType extends AbstractType
 {
+    // Fonction qui construit les champs du formulaire
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -20,6 +21,7 @@ class ContactType extends AbstractType
         ;
     }
 
+    // Fonction qui configure les options du formulaire
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([]);

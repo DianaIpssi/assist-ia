@@ -44,12 +44,20 @@ class Agent implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
+    #[ORM\Column(length: 64, nullable: true)]
+    private ?string $resetToken = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $resetTokenExpiresAt = null;
+
+    // Fonction qui initialise l'objet
     public function __construct()
     {
         $this->properties = new ArrayCollection();
         $this->createdAt = new \DateTimeImmutable();
     }
 
+    // Fonction qui retourne l'identifiant
     public function getId(): ?int
     {
         return $this->id;
@@ -58,11 +66,13 @@ class Agent implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @return Collection<int, Property>
      */
+    // Fonction qui retourne la liste des biens
     public function getProperties(): Collection
     {
         return $this->properties;
     }
 
+    // Fonction qui associe un bien à l'agent
     public function addProperty(Property $property): static
     {
         if (!$this->properties->contains($property)) {
@@ -73,6 +83,7 @@ class Agent implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    // Fonction qui dissocie un bien de l'agent
     public function removeProperty(Property $property): static
     {
         if ($this->properties->removeElement($property)) {
@@ -84,11 +95,13 @@ class Agent implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    // Fonction qui retourne l'email
     public function getEmail(): ?string
     {
         return $this->email;
     }
 
+    // Fonction qui définit l'email
     public function setEmail(string $email): static
     {
         $this->email = $email;
@@ -96,16 +109,19 @@ class Agent implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    // Fonction qui retourne l'email pour la connexion
     public function getUserIdentifier(): string
     {
         return (string) $this->email;
     }
 
+    // Fonction qui retourne le nom complet
     public function getFullName(): ?string
     {
         return $this->fullName;
     }
 
+    // Fonction qui définit le nom complet
     public function setFullName(string $fullName): static
     {
         $this->fullName = $fullName;
@@ -113,11 +129,13 @@ class Agent implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    // Fonction qui retourne Password
     public function getPassword(): ?string
     {
         return $this->password;
     }
 
+    // Fonction qui définit Password
     public function setPassword(string $password): static
     {
         $this->password = $password;
@@ -126,6 +144,7 @@ class Agent implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /** @return list<string> */
+    // Fonction qui retourne le rôle (user ou assistant)s
     public function getRoles(): array
     {
         $roles = $this->roles;
@@ -137,6 +156,7 @@ class Agent implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /** @param list<string> $roles */
+    // Fonction qui définit le rôle du messages
     public function setRoles(array $roles): static
     {
         $this->roles = $roles;
@@ -144,18 +164,49 @@ class Agent implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    // Fonction qui efface les données sensibles temporaires
     public function eraseCredentials(): void
     {
     }
 
+    // Fonction qui retourne Created At
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
     }
 
+    // Fonction qui définit Created At
     public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
         $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    // Fonction qui retourne Reset Token
+    public function getResetToken(): ?string
+    {
+        return $this->resetToken;
+    }
+
+    // Fonction qui définit Reset Token
+    public function setResetToken(?string $resetToken): static
+    {
+        $this->resetToken = $resetToken;
+
+        return $this;
+    }
+
+    // Fonction qui retourne Reset Token Expires At
+    public function getResetTokenExpiresAt(): ?\DateTimeImmutable
+    {
+        return $this->resetTokenExpiresAt;
+    }
+
+    // Fonction qui définit Reset Token Expires At
+    public function setResetTokenExpiresAt(?\DateTimeImmutable $resetTokenExpiresAt): static
+    {
+        $this->resetTokenExpiresAt = $resetTokenExpiresAt;
 
         return $this;
     }

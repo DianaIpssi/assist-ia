@@ -2,21 +2,19 @@
 
 namespace App\Service;
 
-use App\Entity\ChatMessage;
 use App\Entity\Property;
-use App\Repository\ChatMessageRepository;
 use App\Repository\PropertyRepository;
 
 class PropertyChatService
 {
+    // Fonction qui initialise l'objet
     public function __construct(
         private readonly PropertyRepository $propertyRepository,
         private readonly OllamaChatService $ollamaChatService,
-        private readonly ChatMessageRepository $chatMessageRepository,
     ) {
     }
 
-    /** Fonction qui extrait un budget en euros depuis un message. */
+    // Fonction qui extrait le budget depuis un message
     public function extractBudget(string $message): ?int
     {
         $normalized = strtolower(trim($message));
@@ -41,7 +39,7 @@ class PropertyChatService
         return null;
     }
 
-    /** Fonction qui détecte un type de bien (T2, studio…) dans un message. */
+    // Fonction qui extrait le type de bien recherché
     public function extractSearchKeyword(string $message): ?string
     {
         $normalized = strtolower(trim($message));
@@ -53,7 +51,7 @@ class PropertyChatService
         return null;
     }
 
-    /** Fonction qui génère la réponse du chatbot (Ollama ou fallback). */
+    // Fonction qui construit la réponse du chat
     public function buildReply(string $message, ?string $sessionId = null): string
     {
         if ($this->ollamaChatService->isAvailable()) {
@@ -66,7 +64,7 @@ class PropertyChatService
         return $this->buildRuleBasedReply($message);
     }
 
-    /** Fonction qui répond avec la logique basique budget / mot-clé. */
+    // Fonction qui répond avec des règles simples sans IA
     public function buildRuleBasedReply(string $message): string
     {
         $budget = $this->extractBudget($message);
@@ -91,33 +89,52 @@ class PropertyChatService
         return 'Quel est ton budget maximum ? (ex : 150000 €)';
     }
 
-    /** Fonction qui construit une réponse via Ollama avec les biens filtrés. */
+    // Fonction qui répond en utilisant Ollama
     private function buildReplyWithOllama(string $message, ?string $sessionId): ?string
     {
         $criteria = $this->resolveSearchCriteria($message);
         $properties = $this->findPropertiesForCriteria($criteria);
-        $propertiesContext = $this->formatPropertiesForPrompt($properties);
 
-        $messages = [
-            ['role' => 'system', 'content' => $this->buildSystemPrompt($propertiesContext)],
-        ];
+        if ($properties === []) {
+            $allPublished = $this->propertyRepository->findPublished();
+            if ($allPublished === []) {
+                return 'Aucun bien publié pour le moment. Consulte /biens plus tard ou prends RDV sur /rdv.';
+            }
 
-        $history = $this->getRecentHistory($sessionId);
-        foreach ($history as $historyMessage) {
-            $messages[] = [
-                'role' => $historyMessage->getRole() ?? 'user',
-                'content' => $historyMessage->getContent() ?? '',
-            ];
+            return $this->formatPropertyList(
+                $allPublished,
+                '',
+                "Je n'ai pas trouvé de bien correspondant exactement à ta recherche. Voici nos annonces publiées actuellement :\n\n"
+            );
         }
 
-        if ($history === []) {
-            $messages[] = ['role' => 'user', 'content' => $message];
-        }
+        $intro = $this->buildSearchIntro($criteria, \count($properties));
 
-        return $this->ollamaChatService->chat($messages);
+        return $this->formatPropertyList($properties, '', $intro);
     }
 
-    /** Fonction qui extrait budget, ville et type via Ollama + regex. */
+    // Fonction qui prépare le texte d'intro des résultats
+    private function buildSearchIntro(array $criteria, int $count): string
+    {
+        $parts = [];
+        if ($criteria['keyword'] !== null && $criteria['keyword'] !== '') {
+            $parts[] = 'type « '.$criteria['keyword'].' »';
+        }
+        if ($criteria['city'] !== null && $criteria['city'] !== '') {
+            $parts[] = 'à '.$criteria['city'];
+        }
+        if ($criteria['budget'] !== null) {
+            $parts[] = 'budget max '.number_format($criteria['budget'], 0, ',', ' ').' €';
+        }
+
+        if ($parts === []) {
+            return sprintf("Voici %d bien(s) disponible(s) sur notre site :\n\n", $count);
+        }
+
+        return sprintf("Voici %d bien(s) correspondant à ta recherche (%s) — uniquement nos annonces réelles :\n\n", $count, implode(', ', $parts));
+    }
+
+    // Fonction qui analyse le message pour trouver les critères
     private function resolveSearchCriteria(string $message): array
     {
         $criteria = [
@@ -152,7 +169,6 @@ PROMPT;
         }
 
         try {
-            /** @var array{budget?: mixed, city?: mixed, keyword?: mixed} $parsed */
             $parsed = json_decode($matches[0], true, 512, JSON_THROW_ON_ERROR);
         } catch (\JsonException) {
             return $criteria;
@@ -173,7 +189,7 @@ PROMPT;
         return $criteria;
     }
 
-    /** Fonction qui cherche les biens publiés selon les critères extraits. */
+    // Fonction qui cherche les biens selon les critères
     private function findPropertiesForCriteria(array $criteria): array
     {
         $hasFilter = $criteria['budget'] !== null
@@ -191,83 +207,26 @@ PROMPT;
         );
     }
 
-    /** Fonction qui formate la liste des biens pour le prompt Ollama. */
-    private function formatPropertiesForPrompt(array $properties): string
-    {
-        if ($properties === []) {
-            return 'Aucun bien ne correspond aux critères pour le moment.';
-        }
-
-        $lines = array_map(
-            static function (Property $property): string {
-                $parts = [
-                    $property->getTitle(),
-                    $property->getCity() ?: 'ville non renseignée',
-                    number_format((int) $property->getPrice(), 0, ',', ' ').' €',
-                ];
-
-                if ($property->getSurface() !== null) {
-                    $parts[] = $property->getSurface().' m²';
-                }
-
-                if ($property->getRooms() !== null) {
-                    $parts[] = $property->getRooms().' pièce(s)';
-                }
-
-                return '- '.implode(' | ', $parts);
-            },
-            $properties
-        );
-
-        return implode("\n", $lines);
-    }
-
-    /** Fonction qui prépare le prompt système envoyé à Ollama. */
-    private function buildSystemPrompt(string $propertiesContext): string
-    {
-        return <<<PROMPT
-Tu es l'assistant Assist'IA, une agence immobilière en ligne.
-Tu aides les visiteurs à trouver un bien immobilier en France.
-
-Règles importantes :
-- Réponds en français, de façon concise et amicale (tutoiement OK).
-- Ne invente JAMAIS de biens : utilise uniquement la liste ci-dessous.
-- Si aucun bien ne convient, demande budget, ville ou type de bien, ou propose de prendre RDV (/rdv).
-- Tu peux inviter à parcourir toutes les annonces sur /biens.
-
-Biens disponibles :
-{$propertiesContext}
-PROMPT;
-    }
-
-    /** Fonction qui récupère les derniers messages d'une session de chat. */
-    private function getRecentHistory(?string $sessionId, int $limit = 10): array
-    {
-        if ($sessionId === null) {
-            return [];
-        }
-
-        $messages = $this->chatMessageRepository->findBySessionId($sessionId);
-
-        return \array_slice($messages, -$limit);
-    }
-
-    /** Fonction qui formate une liste de biens en texte pour le chat. */
+    // Fonction qui formate la liste des biens en texte
     private function formatPropertyList(array $properties, string $emptyMessage, string $intro): string
     {
         if ($properties === []) {
-            return $emptyMessage;
+            return $emptyMessage !== '' ? $emptyMessage : 'Aucun bien trouvé. Consulte /biens pour voir le catalogue.';
         }
 
         $lines = array_map(
             static fn (Property $property): string => sprintf(
-                '- %s : %d €',
+                "• %s – %s – %s €\n  → /biens/%d",
                 $property->getTitle(),
-                $property->getPrice()
+                $property->getCity() ?: 'ville non renseignée',
+                number_format((int) $property->getPrice(), 0, ',', ' '),
+                (int) $property->getId()
             ),
             $properties
         );
 
-        return $intro.implode("\n", $lines);
+        $outro = "\n\nToutes les annonces : /biens";
+
+        return $intro.implode("\n\n", $lines).$outro;
     }
 }

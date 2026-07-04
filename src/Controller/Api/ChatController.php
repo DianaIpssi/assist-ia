@@ -12,7 +12,7 @@ use Symfony\Component\Routing\Attribute\Route;
 final class ChatController extends AbstractController
 {
     #[Route('/api/chat', name: 'api_chat', methods: ['POST'])]
-    /** Fonction qui traite un message chat et renvoie la réponse JSON. */
+    // Fonction qui traite un message chat et renvoie la réponse JSON. 
     public function chat(
         Request $request,
         PropertyChatService $propertyChatService,

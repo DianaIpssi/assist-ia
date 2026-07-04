@@ -6,17 +6,15 @@ use App\Entity\Property;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-/**
- * @extends ServiceEntityRepository<Property>
- */
 class PropertyRepository extends ServiceEntityRepository
 {
+    // Fonction qui initialise l'objet
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Property::class);
     }
 
-    /** Fonction qui retourne tous les biens publiés. */
+    // Fonction qui retourne tous les biens publiés
     public function findPublished(): array
     {
         return $this->createQueryBuilder('p')
@@ -27,7 +25,7 @@ class PropertyRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    /** Fonction qui cherche les biens publiés sous un budget max. */
+    // Fonction qui cherche les biens sous un budget max
     public function findPublishedByMaxBudget(int $budget): array
     {
         return $this->createQueryBuilder('p')
@@ -40,7 +38,7 @@ class PropertyRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    /** Fonction qui cherche les biens publiés par mot-clé dans le titre. */
+    // Fonction qui cherche les biens par mot-clé dans le titre
     public function findPublishedByTitleKeyword(string $keyword): array
     {
         return $this->createQueryBuilder('p')
@@ -52,8 +50,8 @@ class PropertyRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
-
-    /** Fonction qui filtre les biens publiés par budget, ville et type. */
+    
+    // Fonction qui filtre les biens publiés par critères
     public function findPublishedByFilters(?int $budget, ?string $city, ?string $keyword): array
     {
         $qb = $this->createQueryBuilder('p')
