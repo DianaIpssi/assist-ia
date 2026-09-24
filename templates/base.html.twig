@@ -2,15 +2,22 @@
 <html>
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Assist'IA{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     {{ importmap('app') }}
 </head>
 <body class="bg-gray-50 text-gray-900 min-h-screen flex flex-col">
-    <header class="bg-white border-b border-gray-100 shadow-sm px-6 py-4">
-        <div class="max-w-6xl mx-auto flex items-center justify-between">
+    <header class="bg-white border-b border-gray-100 shadow-sm px-4 md:px-6 py-4">
+        <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between">
             <a href="{{ path('app_home') }}" class="text-xl font-bold text-rose-400">Assist'IA</a>
-            <nav class="flex items-center gap-5 text-sm">
+            <button type="button" class="md:hidden p-1 text-gray-900" aria-label="Ouvrir le menu" aria-controls="main-nav" aria-expanded="false"
+                    onclick="const nav = document.getElementById('main-nav'); const open = nav.classList.toggle('flex'); nav.classList.toggle('hidden', !open); this.setAttribute('aria-expanded', open);">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16"/>
+                </svg>
+            </button>
+            <nav id="main-nav" class="hidden w-full flex-col gap-3 pt-4 text-sm md:flex md:w-auto md:flex-row md:items-center md:gap-5 md:pt-0">
                 <a href="{{ path('public_property_index') }}" class="text-gray-600 hover:text-rose-400">Biens</a>
                 <a href="{{ path('public_appointment') }}" class="text-gray-600 hover:text-rose-400">Prendre RDV</a>
                 <a href="{{ path('public_contact') }}" class="text-gray-600 hover:text-rose-400">Contact</a>
@@ -25,11 +32,11 @@
         </div>
     </header>
 
-    <main class="flex-1 px-6 py-6">
+    <main class="flex-1 px-4 md:px-6 py-6">
         {% block body %}{% endblock %}
     </main>
 
-    <footer class="border-t border-gray-100 bg-white px-6 py-4 text-sm text-gray-500">
+    <footer class="border-t border-gray-100 bg-white px-4 md:px-6 py-4 text-sm text-gray-500">
         <div class="max-w-6xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between gap-2">
             <p>Assist'IA — votre recherche immobilière simplifiée</p>
             <div class="flex gap-4">

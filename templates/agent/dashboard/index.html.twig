@@ -3,12 +3,12 @@
 {% block title %}Dashboard Agent - Assist'IA{% endblock %}
 
 {% block body %}
-<div class="max-w-7xl mx-auto py-8 space-y-8">
-    <section class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 md:p-8">
+<div class="max-w-7xl mx-auto py-2 md:py-8 space-y-6 md:space-y-8">
+    <section class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 md:p-8">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
             <div>
                 <p class="text-sm text-gray-500">Espace Agent Immobilier</p>
-                <h2 class="text-3xl font-bold mt-1">Tableau de bord</h2>
+                <h2 class="text-2xl md:text-3xl font-bold mt-1">Tableau de bord</h2>
                 <p class="text-gray-600 mt-2">
                     Gérez vos annonces, vos rendez-vous clients et l'historique des conversations.
                 </p>
@@ -19,27 +19,27 @@
                 {% endif %}
             </div>
 
-            <div class="flex flex-wrap gap-3">
-                <a href="/property/new" class="px-4 py-2 rounded-lg bg-rose-400 text-white font-semibold hover:bg-rose-500">
+            <div class="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap md:gap-3">
+                <a href="/property/new" class="col-span-2 text-center px-4 py-2 rounded-lg bg-rose-400 text-white font-semibold hover:bg-rose-500">
                     + Nouveau bien
                 </a>
-                <a href="/property" class="px-4 py-2 rounded-lg bg-gray-100 text-gray-900 font-semibold hover:bg-gray-200">
+                <a href="/property" class="text-center px-4 py-2 rounded-lg bg-gray-100 text-gray-900 font-semibold hover:bg-gray-200">
                     Gerer mes biens
                 </a>
-                <a href="{{ path('agent_chats') }}" class="px-4 py-2 rounded-lg bg-gray-100 text-gray-900 font-semibold hover:bg-gray-200">
+                <a href="{{ path('agent_chats') }}" class="text-center px-4 py-2 rounded-lg bg-gray-100 text-gray-900 font-semibold hover:bg-gray-200">
                     Historique chats
                 </a>
-                <a href="{{ path('agent_calendar') }}" class="px-4 py-2 rounded-lg bg-gray-100 text-gray-900 font-semibold hover:bg-gray-200">
+                <a href="{{ path('agent_calendar') }}" class="text-center px-4 py-2 rounded-lg bg-gray-100 text-gray-900 font-semibold hover:bg-gray-200">
                     Calendrier
                 </a>
-                <a href="/biens" class="px-4 py-2 rounded-lg bg-gray-100 text-gray-900 font-semibold hover:bg-gray-200">
+                <a href="/biens" class="text-center px-4 py-2 rounded-lg bg-gray-100 text-gray-900 font-semibold hover:bg-gray-200">
                     Vue client
                 </a>
             </div>
         </div>
     </section>
 
-    <section class="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
+    <section class="grid grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4">
         <article class="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
             <p class="text-sm text-gray-500">Biens totaux</p>
             <p class="text-3xl font-bold mt-2">{{ stats.totalProperties }}</p>
@@ -60,7 +60,7 @@
             <p class="text-3xl font-bold mt-2">{{ stats.totalSlots }}</p>
         </article>
 
-        <article class="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+        <article class="col-span-2 sm:col-span-1 bg-white rounded-xl border border-gray-100 shadow-sm p-5">
             <p class="text-sm text-gray-500">Creneaux disponibles</p>
             <p class="text-3xl font-bold mt-2 text-rose-600">{{ stats.availableSlots }}</p>
         </article>
@@ -74,7 +74,20 @@
             </div>
 
             {% if latestProperties is not empty %}
-                <div class="overflow-auto">
+                <ul class="md:hidden divide-y divide-gray-100">
+                    {% for property in latestProperties %}
+                        <li class="py-3 flex items-center justify-between gap-3">
+                            <div class="min-w-0">
+                                <a href="/property/{{ property.id }}/edit" class="font-medium hover:text-rose-600">{{ property.title }}</a>
+                                <p class="text-sm text-gray-500">{{ property.city ?: '-' }} · {{ property.price }} EUR</p>
+                            </div>
+                            <span class="shrink-0 inline-flex px-2 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700">
+                                {{ property.status ?: 'n/a' }}
+                            </span>
+                        </li>
+                    {% endfor %}
+                </ul>
+                <div class="hidden md:block overflow-auto">
                     <table class="w-full text-left">
                         <thead>
                             <tr class="text-sm text-gray-500 border-b">
@@ -111,7 +124,7 @@
             {% endif %}
         </article>
 
-        <article class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4">
+        <article class="order-first lg:order-none bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4">
             <h3 class="text-xl font-semibold">Actions rapides</h3>
             <a href="/property/new" class="block w-full px-4 py-3 rounded-lg bg-rose-400 text-white font-semibold text-center hover:bg-rose-500">
                 Creer une annonce
