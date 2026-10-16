@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Property;
 use App\Form\PropertyType;
 use App\Repository\PropertyRepository;
+use App\Security\Voter\PropertyVoter;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,11 +16,15 @@ use Symfony\Component\Routing\Attribute\Route;
 final class PropertyController extends AbstractController
 {
     #[Route(name: 'app_property_index', methods: ['GET'])]
-    // Fonction qui liste tous les biens de l'agent. 
+    // Fonction qui liste les biens de l'agent connecté. 
     public function index(PropertyRepository $propertyRepository): Response
     {
+        $properties = $this->isGranted('ROLE_ADMIN')
+            ? $propertyRepository->findAll()
+            : $propertyRepository->findBy(['agent' => $this->getUser()]);
+
         return $this->render('property/index.html.twig', [
-            'properties' => $propertyRepository->findAll(),
+            'properties' => $properties,
         ]);
     }
 
@@ -52,6 +57,8 @@ final class PropertyController extends AbstractController
     // Fonction qui affiche un bien côté agent. 
     public function show(Property $property): Response
     {
+        $this->denyAccessUnlessGranted(PropertyVoter::VIEW, $property);
+
         return $this->render('property/show.html.twig', [
             'property' => $property,
         ]);
@@ -61,6 +68,8 @@ final class PropertyController extends AbstractController
     // Fonction qui modifie un bien existant. 
     public function edit(Request $request, Property $property, EntityManagerInterface $entityManager): Response
     {
+        $this->denyAccessUnlessGranted(PropertyVoter::EDIT, $property);
+
         $form = $this->createForm(PropertyType::class, $property);
         $form->handleRequest($request);
 
@@ -80,6 +89,8 @@ final class PropertyController extends AbstractController
     // Fonction qui supprime un bien avec vérification CSRF. 
     public function delete(Request $request, Property $property, EntityManagerInterface $entityManager): Response
     {
+        $this->denyAccessUnlessGranted(PropertyVoter::DELETE, $property);
+
         if ($this->isCsrfTokenValid('delete'.$property->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($property);
             $entityManager->flush();
