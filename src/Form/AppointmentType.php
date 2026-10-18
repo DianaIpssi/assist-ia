@@ -22,10 +22,10 @@ class AppointmentType extends AbstractType
                 'class' => AvailabilitySlot::class,
                 'choices' => $options['available_slots'],
                 'choice_label' => static fn (AvailabilitySlot $slot): string => sprintf(
-                    '%s - %s%s',
-                    $slot->getStartAt()?->format('d/m/Y H:i'),
-                    $slot->getEndAt()?->format('H:i'),
-                    $slot->getAgent()?->getFullName() ? ' ('.$slot->getAgent()->getFullName().')' : ''
+                    '%s de %s à %s',
+                    $slot->getStartAt()?->format('d/m/Y'),
+                    $slot->getStartAt()?->format('H:i'),
+                    $slot->getEndAt()?->format('H:i')
                 ),
                 'placeholder' => 'Choisissez un créneau',
                 'label' => 'Créneau disponible',

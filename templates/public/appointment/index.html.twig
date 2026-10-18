@@ -8,7 +8,14 @@
 {% block body %}
 <div class="max-w-2xl mx-auto">
     <h1 class="text-3xl font-bold mb-2">Prendre rendez-vous</h1>
-    <p class="text-gray-600 mb-8">Choisissez un créneau disponible pour échanger avec un agent immobilier.</p>
+    <p class="text-gray-600 mb-6">Choisissez un créneau disponible pour échanger avec votre agent.</p>
+
+    <div class="mb-6 rounded-xl border border-rose-100 bg-rose-50 px-4 py-3 flex flex-wrap items-center justify-between gap-2">
+        <p class="text-gray-800">
+            Rendez-vous avec <strong>{{ agent.fullName }}</strong>{% if agent.agencyName %} · {{ agent.agencyName }}{% endif %}
+        </p>
+        <a href="{{ path('public_appointment') }}" class="text-sm text-rose-500 hover:underline">Changer d'agent</a>
+    </div>
 
     {% for message in app.flashes('success') %}
         <div class="mb-4 rounded-lg bg-green-50 border border-green-200 text-green-800 px-4 py-3">{{ message }}</div>

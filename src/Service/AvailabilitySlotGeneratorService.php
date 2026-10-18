@@ -29,7 +29,7 @@ class AvailabilitySlotGeneratorService
         $created = 0;
 
         foreach ($this->agentRepository->findAll() as $agent) {
-            if (!\in_array('ROLE_AGENT', $agent->getRoles(), true)) {
+            if (!\in_array('ROLE_AGENT', $agent->getRoles(), true) || \in_array('ROLE_ADMIN', $agent->getRoles(), true)) {
                 continue;
             }
 

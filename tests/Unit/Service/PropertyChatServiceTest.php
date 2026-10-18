@@ -83,6 +83,35 @@ class PropertyChatServiceTest extends TestCase
         );
     }
 
+    // Fonction qui vérifie les réponses à une salutation et à une demande de RDV
+    public function testBuildReplyForGreetingAndAppointmentRequest(): void
+    {
+        $repository = $this->createMock(PropertyRepository::class);
+        $repository->expects($this->never())->method('findPublished');
+        $service = $this->createService($repository);
+
+        $this->assertStringContainsString('Bonjour', $service->buildReply('Bonjour !'));
+        $this->assertStringContainsString('/rdv', $service->buildReply('peux-tu me réserver un créneau avec un agent ?'));
+    }
+
+    // Fonction qui vérifie qu'Ollama sans critère ne renvoie pas tout le catalogue
+    public function testOllamaReplyWithoutCriteriaAsksBudget(): void
+    {
+        $repository = $this->createMock(PropertyRepository::class);
+        $repository->expects($this->never())->method('findPublished');
+
+        $ollama = $this->createMock(OllamaChatService::class);
+        $ollama->method('isAvailable')->willReturn(true);
+        $ollama->method('chat')->willReturn('{"budget":null,"city":null,"keyword":null}');
+
+        $service = new PropertyChatService($repository, $ollama);
+
+        $this->assertSame(
+            'Quel est ton budget maximum ? (ex : 150000 €)',
+            $service->buildReply('je débute ma recherche')
+        );
+    }
+
     private function createService(PropertyRepository $repository): PropertyChatService
     {
         $ollama = $this->createMock(OllamaChatService::class);

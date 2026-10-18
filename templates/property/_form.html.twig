@@ -21,7 +21,7 @@
         {{ form_label(form.city, 'Ville / Adresse', {'label_attr': {'class': 'block text-sm font-semibold text-gray-700 mb-1'}}) }}
         {{ form_widget(form.city, {'attr': {'class': 'w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-rose-200 focus:border-rose-300', 'placeholder': 'Ex: 10 rue de Rivoli, Paris', 'data-address-autocomplete': 'city', 'data-postal-target': '#property_postalCode', 'data-suggestions-target': '#address-suggestions'}}) }}
         {{ form_errors(form.city) }}
-        <div id="address-suggestions" class="mt-2 space-y-1 rounded-md border border-gray-200 bg-white p-1"></div>
+        <div id="address-suggestions" class="empty:hidden mt-2 space-y-1 rounded-md border border-gray-200 bg-white p-1"></div>
     </div>
 
     <div>
@@ -29,6 +29,46 @@
         {{ form_widget(form.postalCode, {'attr': {'class': 'w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-rose-200 focus:border-rose-300'}}) }}
         {{ form_errors(form.postalCode) }}
     </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div>
+            {{ form_label(form.surface, 'Surface (m²)', {'label_attr': {'class': 'block text-sm font-semibold text-gray-700 mb-1'}}) }}
+            {{ form_widget(form.surface, {'attr': {'class': 'w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-rose-200 focus:border-rose-300'}}) }}
+            {{ form_errors(form.surface) }}
+        </div>
+        <div>
+            {{ form_label(form.rooms, 'Pièces', {'label_attr': {'class': 'block text-sm font-semibold text-gray-700 mb-1'}}) }}
+            {{ form_widget(form.rooms, {'attr': {'class': 'w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-rose-200 focus:border-rose-300'}}) }}
+            {{ form_errors(form.rooms) }}
+        </div>
+        <div>
+            {{ form_label(form.bedrooms, 'Chambres', {'label_attr': {'class': 'block text-sm font-semibold text-gray-700 mb-1'}}) }}
+            {{ form_widget(form.bedrooms, {'attr': {'class': 'w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-rose-200 focus:border-rose-300'}}) }}
+            {{ form_errors(form.bedrooms) }}
+        </div>
+    </div>
+
+    <div>
+        {{ form_label(form.imageUrl, 'URL de l\'image', {'label_attr': {'class': 'block text-sm font-semibold text-gray-700 mb-1'}}) }}
+        {{ form_widget(form.imageUrl, {'attr': {'class': 'w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-rose-200 focus:border-rose-300', 'placeholder': 'https://...'}}) }}
+        {{ form_errors(form.imageUrl) }}
+    </div>
+
+    <div>
+        {{ form_label(form.status, 'Statut', {'label_attr': {'class': 'block text-sm font-semibold text-gray-700 mb-1'}}) }}
+        {{ form_widget(form.status, {'attr': {'class': 'w-full rounded-lg border border-gray-300 px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-rose-200 focus:border-rose-300'}}) }}
+        {{ form_errors(form.status) }}
+    </div>
+
+    {% set owner = property.agent ?? app.user %}
+    {% if owner %}
+        <p class="text-sm text-gray-600">
+            Agence affichée sur ce bien : <strong>{{ owner.agencyName ?: 'aucune' }}</strong>
+            {% if owner is same as(app.user) and not is_granted('ROLE_ADMIN') %}
+                · <a href="{{ path('agent_profile') }}" class="text-rose-500 hover:underline">modifier dans Mon profil</a>
+            {% endif %}
+        </p>
+    {% endif %}
 
     <button class="px-4 py-2 rounded-lg bg-rose-400 text-white font-semibold hover:bg-rose-500">
         {{ button_label|default('Enregistrer') }}

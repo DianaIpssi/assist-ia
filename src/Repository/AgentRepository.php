@@ -15,5 +15,16 @@ class AgentRepository extends ServiceEntityRepository
         parent::__construct($registry, Agent::class);
     }
 
-    
+    /** @return list<Agent> */
+    // Fonction qui retourne les agents réservables par un visiteur (hors administrateurs)
+    public function findBookableAgents(): array
+    {
+        $agents = $this->findBy([], ['fullName' => 'ASC']);
+
+        return array_values(array_filter(
+            $agents,
+            static fn (Agent $agent): bool => \in_array('ROLE_AGENT', $agent->getRoles(), true)
+                && !\in_array('ROLE_ADMIN', $agent->getRoles(), true)
+        ));
+    }
 }

@@ -6,6 +6,7 @@ use App\Entity\Agent;
 use App\Entity\AvailabilitySlot;
 use App\Repository\AppointmentRepository;
 use App\Repository\AvailabilitySlotRepository;
+use App\Service\AvailabilitySlotGeneratorService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,11 +20,14 @@ final class CalendarController extends AbstractController
     public function index(
         AvailabilitySlotRepository $slotRepository,
         AppointmentRepository $appointmentRepository,
+        AvailabilitySlotGeneratorService $slotGenerator,
     ): Response {
         $user = $this->getUser();
         if (!$user instanceof Agent) {
             throw $this->createAccessDeniedException();
         }
+
+        $slotGenerator->ensureUpcomingSlots();
 
         $slots = $slotRepository->createQueryBuilder('s')
             ->andWhere('s.agent = :agent OR s.agent IS NULL')

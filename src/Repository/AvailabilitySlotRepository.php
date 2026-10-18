@@ -29,6 +29,22 @@ class AvailabilitySlotRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    // Fonction qui retourne les créneaux libres à venir d'un agent
+    public function findAvailableUpcomingForAgent(Agent $agent, int $limit = 20): array
+    {
+        return $this->createQueryBuilder('s')
+            ->andWhere('s.agent = :agent')
+            ->andWhere('s.isAvailable = :available')
+            ->andWhere('s.startAt >= :now')
+            ->setParameter('agent', $agent)
+            ->setParameter('available', true)
+            ->setParameter('now', new \DateTimeImmutable())
+            ->orderBy('s.startAt', 'ASC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
     // Fonction qui vérifie si un créneau existe déjà à cette date
     public function existsForAgentAt(Agent $agent, \DateTimeImmutable $startAt): bool
     {

@@ -15,9 +15,14 @@
                     <p class="text-sm text-gray-500">Bien immobilier</p>
                     <h1 class="text-3xl font-bold">{{ property.title }}</h1>
                 </div>
-                <a href="{{ path('public_property_index') }}" class="px-4 py-2 rounded-lg bg-gray-100 text-gray-900 font-semibold hover:bg-gray-200">
-                    Retour aux biens
-                </a>
+                <div class="flex flex-wrap gap-2">
+                    <a href="{{ path('public_contact', {bien: property.id}) }}" class="px-4 py-2 rounded-lg bg-rose-400 text-white font-semibold hover:bg-rose-500">
+                        Contacter l'agent
+                    </a>
+                    <a href="{{ path('public_property_index') }}" class="px-4 py-2 rounded-lg bg-gray-100 text-gray-900 font-semibold hover:bg-gray-200">
+                        Retour aux biens
+                    </a>
+                </div>
             </div>
 
             <div class="grid md:grid-cols-2 gap-5">
@@ -47,6 +52,22 @@
                     <p class="text-sm text-gray-500">Description</p>
                     <p class="mt-1 text-gray-800">{{ property.description ?: 'Aucune description fournie.' }}</p>
                 </article>
+                {% if property.agent %}
+                    <article class="md:col-span-2 rounded-xl border border-gray-100 p-4 flex flex-wrap items-center justify-between gap-3">
+                        <div>
+                            <p class="text-sm text-gray-500">Agent responsable</p>
+                            <p class="text-lg font-semibold mt-1">{{ property.agent.fullName }}</p>
+                            {% if property.agent.agencyName %}
+                                <p class="text-sm text-gray-600">{{ property.agent.agencyName }}</p>
+                            {% endif %}
+                        </div>
+                        {% if 'ROLE_ADMIN' not in property.agent.roles %}
+                            <a href="{{ path('public_appointment', {agent: property.agent.id}) }}" class="px-4 py-2 rounded-lg bg-gray-100 text-gray-900 font-semibold hover:bg-gray-200">
+                                Prendre RDV avec cet agent
+                            </a>
+                        {% endif %}
+                    </article>
+                {% endif %}
             </div>
         </div>
     </section>

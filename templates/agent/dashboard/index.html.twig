@@ -24,7 +24,7 @@
                     + Nouveau bien
                 </a>
                 <a href="/property" class="text-center px-4 py-2 rounded-lg bg-gray-100 text-gray-900 font-semibold hover:bg-gray-200">
-                    Gerer mes biens
+                    Gérer mes biens
                 </a>
                 <a href="{{ path('agent_chats') }}" class="text-center px-4 py-2 rounded-lg bg-gray-100 text-gray-900 font-semibold hover:bg-gray-200">
                     Historique chats
@@ -35,6 +35,16 @@
                 <a href="/biens" class="text-center px-4 py-2 rounded-lg bg-gray-100 text-gray-900 font-semibold hover:bg-gray-200">
                     Vue client
                 </a>
+                {% if not is_granted('ROLE_ADMIN') %}
+                    <a href="{{ path('agent_profile') }}" class="text-center px-4 py-2 rounded-lg bg-gray-100 text-gray-900 font-semibold hover:bg-gray-200">
+                        Mon profil
+                    </a>
+                {% endif %}
+                {% if is_granted('ROLE_ADMIN') %}
+                    <a href="{{ path('admin') }}" class="text-center px-4 py-2 rounded-lg bg-gray-100 text-gray-900 font-semibold hover:bg-gray-200">
+                        Administration
+                    </a>
+                {% endif %}
             </div>
         </div>
     </section>
@@ -46,7 +56,7 @@
         </article>
 
         <article class="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
-            <p class="text-sm text-gray-500">Biens publies</p>
+            <p class="text-sm text-gray-500">Biens publiés</p>
             <p class="text-3xl font-bold mt-2 text-rose-500">{{ stats.publishedProperties }}</p>
         </article>
 
@@ -56,20 +66,20 @@
         </article>
 
         <article class="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
-            <p class="text-sm text-gray-500">Creneaux totaux</p>
+            <p class="text-sm text-gray-500">Créneaux totaux</p>
             <p class="text-3xl font-bold mt-2">{{ stats.totalSlots }}</p>
         </article>
 
         <article class="col-span-2 sm:col-span-1 bg-white rounded-xl border border-gray-100 shadow-sm p-5">
-            <p class="text-sm text-gray-500">Creneaux disponibles</p>
+            <p class="text-sm text-gray-500">Créneaux disponibles</p>
             <p class="text-3xl font-bold mt-2 text-rose-600">{{ stats.availableSlots }}</p>
         </article>
     </section>
 
-    <section class="grid lg:grid-cols-3 gap-6">
-        <article class="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+    <section>
+        <article class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
             <div class="flex items-center justify-between mb-4">
-                <h3 class="text-xl font-semibold">Derniers biens ajoutes</h3>
+                <h3 class="text-xl font-semibold">Derniers biens ajoutés</h3>
                 <a href="/property" class="text-sm font-medium text-rose-600 hover:text-rose-700">Voir tout</a>
             </div>
 
@@ -82,7 +92,7 @@
                                 <p class="text-sm text-gray-500">{{ property.city ?: '-' }} · {{ property.price }} EUR</p>
                             </div>
                             <span class="shrink-0 inline-flex px-2 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700">
-                                {{ property.status ?: 'n/a' }}
+                                {{ property.isPublished ? 'Publié' : 'Brouillon' }}
                             </span>
                         </li>
                     {% endfor %}
@@ -106,7 +116,7 @@
                                     <td class="py-3 pr-3">{{ property.price }} EUR</td>
                                     <td class="py-3 pr-3">
                                         <span class="inline-flex px-2 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700">
-                                            {{ property.status ?: 'n/a' }}
+                                            {{ property.isPublished ? 'Publié' : 'Brouillon' }}
                                         </span>
                                     </td>
                                     <td class="py-3 text-right">
@@ -120,30 +130,10 @@
                     </table>
                 </div>
             {% else %}
-                <p class="text-gray-600">Aucun bien enregistre pour le moment.</p>
+                <p class="text-gray-600">Aucun bien enregistré pour le moment.</p>
             {% endif %}
         </article>
 
-        <article class="order-first lg:order-none bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-4">
-            <h3 class="text-xl font-semibold">Actions rapides</h3>
-            <a href="/property/new" class="block w-full px-4 py-3 rounded-lg bg-rose-400 text-white font-semibold text-center hover:bg-rose-500">
-                Creer une annonce
-            </a>
-            <a href="{{ path('agent_chats') }}" class="block w-full px-4 py-3 rounded-lg bg-gray-100 text-gray-900 font-semibold text-center hover:bg-gray-200">
-                Voir les conversations clients
-            </a>
-            <a href="{{ path('agent_calendar') }}" class="block w-full px-4 py-3 rounded-lg bg-gray-100 text-gray-900 font-semibold text-center hover:bg-gray-200">
-                Gerer mon calendrier
-            </a>
-            <a href="/property" class="block w-full px-4 py-3 rounded-lg bg-gray-100 text-gray-900 font-semibold text-center hover:bg-gray-200">
-                Ouvrir le back-office biens
-            </a>
-            {% if is_granted('ROLE_ADMIN') %}
-                <a href="{{ path('admin') }}" class="block w-full px-4 py-3 rounded-lg bg-gray-100 text-gray-900 font-semibold text-center hover:bg-gray-200">
-                    Administration (EasyAdmin)
-                </a>
-            {% endif %}
-        </article>
     </section>
 </div>
 {% endblock %}

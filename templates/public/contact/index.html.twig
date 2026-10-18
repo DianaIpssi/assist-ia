@@ -15,11 +15,26 @@
     {% endfor %}
 
     <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 md:p-8 space-y-6">
-        <div class="text-sm text-gray-600 space-y-1">
-            <p><strong>Email :</strong> contact@assist-ia.fr</p>
-            <p><strong>Téléphone :</strong> 01.00.00.00</p>
-            <p><strong>Horaires :</strong> Lun–Ven, 9h–18h</p>
-        </div>
+        {% if property %}
+            <div class="rounded-xl bg-rose-50 border border-rose-100 px-4 py-3 text-sm text-gray-700">
+                <p class="text-gray-500">Votre message concerne le bien</p>
+                <p class="font-semibold text-gray-900 mt-0.5">
+                    <a href="{{ path('public_property_show', {id: property.id}) }}" class="hover:text-rose-500">{{ property.title }}</a>
+                    {% if property.city %}· {{ property.city }}{% endif %}
+                </p>
+                <p class="mt-2">
+                    Il sera envoyé à <strong>{{ property.agent ? property.agent.fullName : 'l\'agence Assist\'IA' }}</strong>{% if property.agent %}{% if property.agent.agencyName %} ({{ property.agent.agencyName }}){% endif %}, l'agent responsable de ce bien{% endif %}.
+                </p>
+            </div>
+        {% else %}
+            <div class="text-sm text-gray-600 space-y-1">
+                <p>Votre message sera envoyé à <strong>l'agence Assist'IA</strong>.</p>
+                <p><strong>Email :</strong> contact@assist-ia.fr</p>
+                <p><strong>Téléphone :</strong> 01.00.00.00</p>
+                <p><strong>Horaires :</strong> Lun–Ven, 9h–18h</p>
+                <p class="pt-1 text-gray-500">Une question sur un bien précis ? Utilisez le bouton « Contacter l'agent » sur la page du bien.</p>
+            </div>
+        {% endif %}
 
         {{ form_start(form, {attr: {class: 'space-y-5'}}) }}
             <div>

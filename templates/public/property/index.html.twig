@@ -26,6 +26,12 @@
 
                     <p class="font-semibold text-rose-500 mt-3 text-lg">{{ property.price|number_format(0, ',', ' ') }} €</p>
 
+                    {% if property.agent %}
+                        <p class="text-sm text-gray-500 mt-2">
+                            Proposé par {{ property.agent.fullName }}{% if property.agent.agencyName %} · {{ property.agent.agencyName }}{% endif %}
+                        </p>
+                    {% endif %}
+
                     <div class="mt-auto pt-4">
                         <a href="{{ path('public_property_show', {'id': property.id}) }}"
                            class="inline-flex items-center justify-center w-full px-4 h-11 rounded-lg bg-rose-400 text-white font-semibold hover:bg-rose-500">

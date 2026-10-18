@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Prendre rendez-vous - Assist'IA{% endblock %}
+
+{% block body %}
+<div class="max-w-5xl mx-auto">
+    <h1 class="text-3xl font-bold mb-2">Prendre rendez-vous</h1>
+    <p class="text-gray-600 mb-8">Choisissez l'agent avec qui vous souhaitez échanger, puis un créneau disponible.</p>
+
+    {% if agents is empty %}
+        <div class="bg-white rounded-2xl border border-gray-100 p-6 text-gray-600">
+            Aucun agent disponible pour le moment. Utilisez la page <a href="{{ path('public_contact') }}" class="text-rose-400 hover:underline">Contact</a>.
+        </div>
+    {% else %}
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {% for agent in agents %}
+                <article class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="w-12 h-12 rounded-full bg-rose-100 text-rose-500 font-bold flex items-center justify-center">
+                            {{ agent.fullName|split(' ')|map(part => part|first)|join|upper|slice(0, 2) }}
+                        </span>
+                        <div>
+                            <h2 class="font-bold text-lg">{{ agent.fullName }}</h2>
+                            <p class="text-sm text-gray-500">{{ agent.agencyName ?: 'Agence Assist\'IA' }}</p>
+                        </div>
+                    </div>
+                    <a href="{{ path('public_appointment', {agent: agent.id}) }}"
+                       class="mt-auto inline-flex items-center justify-center px-4 h-11 rounded-lg bg-rose-400 text-white font-semibold hover:bg-rose-500">
+                        Voir ses créneaux
+                    </a>
+                </article>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

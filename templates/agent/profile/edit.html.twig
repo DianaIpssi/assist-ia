@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon profil - Assist'IA{% endblock %}
+
+{% set fieldClass = 'w-full rounded-lg border border-gray-300 px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-rose-200 focus:border-rose-300' %}
+{% set labelClass = 'block text-sm font-semibold text-gray-700 mb-1' %}
+
+{% block body %}
+<div class="max-w-xl mx-auto py-8">
+    <div class="flex items-center justify-between gap-4 mb-6">
+        <h1 class="text-2xl font-bold">Mon profil</h1>
+        <a href="{{ path('agent_dashboard') }}" class="px-4 py-2 rounded-lg bg-gray-100 text-gray-900 font-semibold hover:bg-gray-200">
+            Retour au tableau de bord
+        </a>
+    </div>
+
+    {% for message in app.flashes('success') %}
+        <div class="mb-4 rounded-lg bg-green-50 border border-green-200 text-green-800 px-4 py-3">{{ message }}</div>
+    {% endfor %}
+
+    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 md:p-8">
+        <p class="text-sm text-gray-600 mb-5">
+            Ces informations sont affichées aux visiteurs sur vos biens, sur la page de contact et lors de la prise de rendez-vous.
+        </p>
+
+        {{ form_start(form, {attr: {class: 'space-y-5'}}) }}
+            <div>
+                {{ form_label(form.fullName, null, {label_attr: {class: labelClass}}) }}
+                {{ form_widget(form.fullName, {attr: {class: fieldClass}}) }}
+                {{ form_errors(form.fullName) }}
+            </div>
+            <div>
+                {{ form_label(form.agencyName, null, {label_attr: {class: labelClass}}) }}
+                {{ form_widget(form.agencyName, {attr: {class: fieldClass}}) }}
+                {{ form_errors(form.agencyName) }}
+            </div>
+            <button type="submit" class="px-6 py-3 rounded-xl bg-rose-400 text-white font-semibold hover:bg-rose-500">
+                Enregistrer
+            </button>
+        {{ form_end(form) }}
+    </div>
+</div>
+{% endblock %}

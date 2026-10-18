@@ -54,6 +54,11 @@ class PropertyChatService
     // Fonction qui construit la réponse du chat
     public function buildReply(string $message, ?string $sessionId = null): string
     {
+        $intentReply = $this->buildIntentReply($message);
+        if ($intentReply !== null) {
+            return $intentReply;
+        }
+
         if ($this->ollamaChatService->isAvailable()) {
             $ollamaReply = $this->buildReplyWithOllama($message, $sessionId);
             if ($ollamaReply !== null) {
@@ -62,6 +67,30 @@ class PropertyChatService
         }
 
         return $this->buildRuleBasedReply($message);
+    }
+
+    // Fonction qui répond aux salutations et aux demandes de RDV ou de contact
+    public function buildIntentReply(string $message): ?string
+    {
+        $normalized = mb_strtolower(trim($message));
+
+        if (preg_match('/\b(rdv|rendez[\s-]?vous|cr[ée]neaux?|r[ée]serv\w*)\b/u', $normalized) === 1) {
+            return "Je ne peux pas réserver à ta place, mais c'est rapide : choisis ton agent puis un créneau sur /rdv.\n\n"
+                ."Depuis la fiche d'un bien, le bouton « Prendre RDV avec cet agent » t'amène directement à ses créneaux.";
+        }
+
+        if (preg_match('/\b(contact\w*|joindre|t[ée]l[ée]phone|e-?mail)\b/u', $normalized) === 1) {
+            return "Tu peux écrire à l'agence sur /contact.\n\n"
+                ."Pour une question sur un bien précis, utilise le bouton « Contacter l'agent » sur sa fiche : ton message ira directement à son agent.";
+        }
+
+        $withoutGreeting = preg_replace('/\b(bonjour|bonsoir|salut|hello|coucou|hey|ça va|ca va)\b|[\s!?.,]/u', '', $normalized) ?? $normalized;
+        if ($withoutGreeting === '' && $normalized !== '') {
+            return "Bonjour ! Je suis l'assistant Assist'IA. Je t'aide à trouver un bien parmi nos annonces.\n\n"
+                .'Quel est ton budget maximum ? (ex : 150000 €) Tu peux aussi me donner un type de bien (studio, T2, maison) ou une ville.';
+        }
+
+        return null;
     }
 
     // Fonction qui répond avec des règles simples sans IA
@@ -93,6 +122,10 @@ class PropertyChatService
     private function buildReplyWithOllama(string $message, ?string $sessionId): ?string
     {
         $criteria = $this->resolveSearchCriteria($message);
+        if ($criteria['budget'] === null && ($criteria['city'] ?? '') === '' && ($criteria['keyword'] ?? '') === '') {
+            return $this->buildRuleBasedReply($message);
+        }
+
         $properties = $this->findPropertiesForCriteria($criteria);
 
         if ($properties === []) {
@@ -178,15 +211,23 @@ PROMPT;
             $criteria['budget'] = (int) $parsed['budget'];
         }
 
-        if (isset($parsed['city']) && \is_string($parsed['city']) && trim($parsed['city']) !== '') {
+        if (isset($parsed['city']) && \is_string($parsed['city']) && $this->isInMessage($parsed['city'], $message)) {
             $criteria['city'] = trim($parsed['city']);
         }
 
-        if (isset($parsed['keyword']) && \is_string($parsed['keyword']) && trim($parsed['keyword']) !== '') {
+        if (isset($parsed['keyword']) && \is_string($parsed['keyword']) && $this->isInMessage($parsed['keyword'], $message)) {
             $criteria['keyword'] = trim($parsed['keyword']);
         }
 
         return $criteria;
+    }
+
+    // Fonction qui vérifie qu'un critère proposé par l'IA figure bien dans le message
+    private function isInMessage(string $value, string $message): bool
+    {
+        $value = mb_strtolower(trim($value));
+
+        return $value !== '' && str_contains(mb_strtolower($message), $value);
     }
 
     // Fonction qui cherche les biens selon les critères

@@ -137,6 +137,7 @@ function Chat({ embedded = false }) {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [sessionId, setSessionId] = useState(getSessionId);
+  const [open, setOpen] = useState(embedded);
   const listRef = useRef(null);
 
   useEffect(() => {
@@ -185,6 +186,29 @@ function Chat({ embedded = false }) {
   const width = embedded ? '100%' : 400;
   const messagesHeight = embedded ? 380 : 360;
 
+  if (!open) {
+    return React.createElement(
+      'button',
+      {
+        type: 'button',
+        onClick: () => setOpen(true),
+        'aria-label': "Ouvrir l'assistant Assist'IA",
+        style: {
+          padding: '12px 18px',
+          borderRadius: 999,
+          border: 0,
+          cursor: 'pointer',
+          fontWeight: 700,
+          fontFamily: 'system-ui',
+          background: '#ec4899',
+          color: 'white',
+          boxShadow: '0 10px 30px rgba(0,0,0,0.15)',
+        }
+      },
+      "💬 Une question ?"
+    );
+  }
+
   return React.createElement(
     'div',
     {
@@ -200,8 +224,18 @@ function Chat({ embedded = false }) {
     },
     React.createElement(
       'div',
-      { style: { padding: 12, borderBottom: '1px solid #eee', fontWeight: 700 } },
-      embedded ? "Parlez à l'assistant Assist'IA" : "Assist'IA"
+      { style: { padding: 12, borderBottom: '1px solid #eee', fontWeight: 700, display: 'flex', justifyContent: 'space-between', alignItems: 'center' } },
+      embedded ? "Parlez à l'assistant Assist'IA" : "Assist'IA",
+      embedded ? null : React.createElement(
+        'button',
+        {
+          type: 'button',
+          onClick: () => setOpen(false),
+          'aria-label': 'Réduire le chat',
+          style: { border: 0, background: 'transparent', cursor: 'pointer', fontSize: 20, lineHeight: 1, color: '#6b7280' }
+        },
+        '×'
+      )
     ),
     React.createElement(
       'div',

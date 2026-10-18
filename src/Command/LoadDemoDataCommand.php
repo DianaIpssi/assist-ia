@@ -20,7 +20,16 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 )]
 class LoadDemoDataCommand extends Command
 {
-    /** @var list<array{title: string, price: int, status: string, city: string, postalCode: string, description: string, imageUrl: string, surface: int, rooms: int, bedrooms: int}> */
+    /** @var array<string, array{fullName: string, agencyName: string}> */
+    private const DEMO_AGENTS = [
+        'agent@assist-ia.fr' => ['fullName' => 'Camille Durand', 'agencyName' => 'Agence Lumière Immobilier'],
+        'thomas.lefevre@assist-ia.fr' => ['fullName' => 'Thomas Lefèvre', 'agencyName' => 'Rhône Habitat'],
+        'julie.moreau@assist-ia.fr' => ['fullName' => 'Julie Moreau', 'agencyName' => 'Océane Immobilier'],
+        'karim.benali@assist-ia.fr' => ['fullName' => 'Karim Benali', 'agencyName' => 'Azur Immobilier'],
+        'lea.rousseau@assist-ia.fr' => ['fullName' => 'Léa Rousseau', 'agencyName' => 'Nord Habitat'],
+    ];
+
+    /** @var list<array{title: string, price: int, status: string, city: string, postalCode: string, description: string, imageUrl: string, surface: int, rooms: int, bedrooms: int, agent: string}> */
     private const DEMO_PROPERTIES = [
         [
             'title' => 'Studio lumineux',
@@ -33,6 +42,7 @@ class LoadDemoDataCommand extends Command
             'surface' => 28,
             'rooms' => 1,
             'bedrooms' => 1,
+            'agent' => 'agent@assist-ia.fr',
         ],
         [
             'title' => 'T2 avec balcon',
@@ -45,6 +55,7 @@ class LoadDemoDataCommand extends Command
             'surface' => 52,
             'rooms' => 2,
             'bedrooms' => 1,
+            'agent' => 'agent@assist-ia.fr',
         ],
         [
             'title' => 'Maison familiale',
@@ -57,6 +68,111 @@ class LoadDemoDataCommand extends Command
             'surface' => 120,
             'rooms' => 5,
             'bedrooms' => 3,
+            'agent' => 'agent@assist-ia.fr',
+        ],
+        [
+            'title' => 'Appartement T3 Croix-Rousse',
+            'price' => 265000,
+            'status' => Property::STATUS_PUBLISHED,
+            'city' => 'Lyon',
+            'postalCode' => '69004',
+            'description' => 'T3 traversant avec parquet ancien, à deux pas des pentes de la Croix-Rousse.',
+            'imageUrl' => 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&q=80',
+            'surface' => 68,
+            'rooms' => 3,
+            'bedrooms' => 2,
+            'agent' => 'thomas.lefevre@assist-ia.fr',
+        ],
+        [
+            'title' => 'Loft industriel Confluence',
+            'price' => 345000,
+            'status' => Property::STATUS_PUBLISHED,
+            'city' => 'Lyon',
+            'postalCode' => '69002',
+            'description' => 'Loft lumineux dans une ancienne halle rénovée, quartier Confluence.',
+            'imageUrl' => 'https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=800&q=80',
+            'surface' => 95,
+            'rooms' => 3,
+            'bedrooms' => 2,
+            'agent' => 'thomas.lefevre@assist-ia.fr',
+        ],
+        [
+            'title' => 'Échoppe bordelaise rénovée',
+            'price' => 410000,
+            'status' => Property::STATUS_PUBLISHED,
+            'city' => 'Bordeaux',
+            'postalCode' => '33800',
+            'description' => 'Échoppe en pierre avec patio, entièrement rénovée.',
+            'imageUrl' => 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800&q=80',
+            'surface' => 110,
+            'rooms' => 4,
+            'bedrooms' => 3,
+            'agent' => 'julie.moreau@assist-ia.fr',
+        ],
+        [
+            'title' => 'T2 proche Île de Nantes',
+            'price' => 189000,
+            'status' => Property::STATUS_PUBLISHED,
+            'city' => 'Nantes',
+            'postalCode' => '44200',
+            'description' => 'T2 moderne avec cuisine équipée, proche tramway.',
+            'imageUrl' => 'https://images.unsplash.com/photo-1484154218962-a197022b5858?w=800&q=80',
+            'surface' => 45,
+            'rooms' => 2,
+            'bedrooms' => 1,
+            'agent' => 'julie.moreau@assist-ia.fr',
+        ],
+        [
+            'title' => 'Villa avec piscine',
+            'price' => 690000,
+            'status' => Property::STATUS_PUBLISHED,
+            'city' => 'Nice',
+            'postalCode' => '06200',
+            'description' => 'Villa sur les hauteurs avec piscine et vue dégagée.',
+            'imageUrl' => 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&q=80',
+            'surface' => 160,
+            'rooms' => 6,
+            'bedrooms' => 4,
+            'agent' => 'karim.benali@assist-ia.fr',
+        ],
+        [
+            'title' => 'T3 vue mer',
+            'price' => 375000,
+            'status' => Property::STATUS_PUBLISHED,
+            'city' => 'Marseille',
+            'postalCode' => '13007',
+            'description' => 'T3 avec terrasse et vue mer, quartier Endoume.',
+            'imageUrl' => 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&q=80',
+            'surface' => 72,
+            'rooms' => 3,
+            'bedrooms' => 2,
+            'agent' => 'karim.benali@assist-ia.fr',
+        ],
+        [
+            'title' => 'Maison de ville avec jardin',
+            'price' => 299000,
+            'status' => Property::STATUS_PUBLISHED,
+            'city' => 'Lille',
+            'postalCode' => '59000',
+            'description' => 'Maison de ville en briques avec jardin, proche Vieux-Lille.',
+            'imageUrl' => 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=800&q=80',
+            'surface' => 105,
+            'rooms' => 5,
+            'bedrooms' => 3,
+            'agent' => 'lea.rousseau@assist-ia.fr',
+        ],
+        [
+            'title' => 'Studio étudiant',
+            'price' => 118000,
+            'status' => Property::STATUS_PUBLISHED,
+            'city' => 'Lille',
+            'postalCode' => '59800',
+            'description' => 'Studio meublé, idéal étudiant ou investissement locatif.',
+            'imageUrl' => 'https://images.unsplash.com/photo-1505691938895-1758d7feb511?w=800&q=80',
+            'surface' => 22,
+            'rooms' => 1,
+            'bedrooms' => 1,
+            'agent' => 'lea.rousseau@assist-ia.fr',
         ],
     ];
 
@@ -74,14 +190,20 @@ class LoadDemoDataCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
-        $agent = $this->entityManager->getRepository(Agent::class)->findOneBy(['email' => 'agent@assist-ia.fr']);
-        if (!$agent) {
-            $agent = (new Agent())
-                ->setEmail('agent@assist-ia.fr')
-                ->setFullName('Agent Démo')
-                ->setRoles(['ROLE_AGENT']);
-            $agent->setPassword($this->passwordHasher->hashPassword($agent, 'Agent123!'));
-            $this->entityManager->persist($agent);
+        $agents = [];
+        foreach (self::DEMO_AGENTS as $email => $data) {
+            $agent = $this->entityManager->getRepository(Agent::class)->findOneBy(['email' => $email]);
+            if (!$agent) {
+                $agent = (new Agent())
+                    ->setEmail($email)
+                    ->setFullName($data['fullName'])
+                    ->setAgencyName($data['agencyName'])
+                    ->setRoles(['ROLE_AGENT']);
+                $agent->setPassword($this->passwordHasher->hashPassword($agent, 'Agent123!'));
+                $this->entityManager->persist($agent);
+            }
+
+            $agents[$email] = $agent;
         }
 
         $admin = $this->entityManager->getRepository(Agent::class)->findOneBy(['email' => 'admin@assist-ia.fr']);
@@ -102,7 +224,7 @@ class LoadDemoDataCommand extends Command
 
             if (!$property) {
                 $property = new Property();
-                $property->setAgent($agent);
+                $property->setAgent($agents[$data['agent']]);
                 $this->entityManager->persist($property);
             }
 

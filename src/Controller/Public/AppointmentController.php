@@ -5,6 +5,8 @@ namespace App\Controller\Public;
 use App\Entity\Appointment;
 use App\Form\AppointmentType;
 use App\Service\AppointmentMailerService;
+use App\Service\AvailabilitySlotGeneratorService;
+use App\Repository\AgentRepository;
 use App\Repository\AvailabilitySlotRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -21,8 +23,27 @@ final class AppointmentController extends AbstractController
         AvailabilitySlotRepository $slotRepository,
         EntityManagerInterface $entityManager,
         AppointmentMailerService $appointmentMailerService,
+        AvailabilitySlotGeneratorService $slotGenerator,
+        AgentRepository $agentRepository,
     ): Response {
-        $availableSlots = $slotRepository->findAvailableUpcoming();
+        $slotGenerator->ensureUpcomingSlots();
+
+        $agents = $agentRepository->findBookableAgents();
+        $agentId = $request->query->getInt('agent');
+        $selectedAgent = null;
+        foreach ($agents as $agent) {
+            if ($agent->getId() === $agentId) {
+                $selectedAgent = $agent;
+            }
+        }
+
+        if (!$selectedAgent) {
+            return $this->render('public/appointment/agents.html.twig', [
+                'agents' => $agents,
+            ]);
+        }
+
+        $availableSlots = $slotRepository->findAvailableUpcomingForAgent($selectedAgent);
 
         $appointment = new Appointment();
         $form = $this->createForm(AppointmentType::class, $appointment, [
@@ -35,14 +56,14 @@ final class AppointmentController extends AbstractController
             if (!$slot || !$slot->isAvailable()) {
                 $this->addFlash('error', 'Ce créneau n\'est plus disponible.');
 
-                return $this->redirectToRoute('public_appointment');
+                return $this->redirectToRoute('public_appointment', ['agent' => $selectedAgent->getId()]);
             }
 
             $agent = $slot->getAgent();
             if (!$agent) {
                 $this->addFlash('error', 'Ce créneau n\'est pas associé à un agent. Choisissez un autre créneau.');
 
-                return $this->redirectToRoute('public_appointment');
+                return $this->redirectToRoute('public_appointment', ['agent' => $selectedAgent->getId()]);
             }
 
             $appointment->setAgent($agent);
@@ -56,12 +77,13 @@ final class AppointmentController extends AbstractController
 
             $this->addFlash('success', 'Votre rendez-vous a bien été enregistré. Un email de confirmation vous a été envoyé.');
 
-            return $this->redirectToRoute('public_appointment');
+            return $this->redirectToRoute('public_appointment', ['agent' => $selectedAgent->getId()]);
         }
 
         return $this->render('public/appointment/index.html.twig', [
             'form' => $form,
             'availableSlots' => $availableSlots,
+            'agent' => $selectedAgent,
         ]);
     }
 }

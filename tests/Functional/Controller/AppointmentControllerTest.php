@@ -24,7 +24,8 @@ class AppointmentControllerTest extends DatabaseWebTestCase
         $client = $this->createClientWithFreshDatabase();
         $slot = $this->seedAvailableSlot();
 
-        $crawler = $client->request('GET', '/rdv');
+        $agentId = $slot->getAgent()->getId();
+        $crawler = $client->request('GET', '/rdv?agent='.$agentId);
         $form = $crawler->selectButton('Confirmer le rendez-vous')->form([
             'appointment[slot]' => (string) $slot->getId(),
             'appointment[clientName]' => 'Client Test',
@@ -33,10 +34,67 @@ class AppointmentControllerTest extends DatabaseWebTestCase
         ]);
 
         $client->submit($form);
-        $this->assertResponseRedirects('/rdv');
+        $this->assertResponseRedirects('/rdv?agent='.$agentId);
 
         $client->followRedirect();
         $this->assertSelectorTextContains('.bg-green-50', 'enregistré');
+    }
+
+    // Fonction qui vérifie que le visiteur choisit un agent et que l'administrateur n'apparaît pas
+    public function testAgentListShowsAgentsWithoutAdministrator(): void
+    {
+        $client = $this->createClientWithFreshDatabase();
+        $this->createAgent('sophie@assist-ia.fr', 'Sophie Martin', 'Rhône Habitat', ['ROLE_AGENT']);
+        $this->createAgent('admin@assist-ia.fr', 'Administrateur', null, ['ROLE_ADMIN', 'ROLE_AGENT']);
+
+        $client->request('GET', '/rdv');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorTextContains('body', 'Sophie Martin');
+        $this->assertSelectorTextContains('body', 'Rhône Habitat');
+        $this->assertSelectorTextNotContains('body', 'Administrateur');
+    }
+
+    // Fonction qui vérifie que seuls les créneaux de l'agent choisi sont proposés
+    public function testSlotsAreFilteredByChosenAgent(): void
+    {
+        $client = $this->createClientWithFreshDatabase();
+        $sophie = $this->createAgent('sophie@assist-ia.fr', 'Sophie Martin', 'Rhône Habitat', ['ROLE_AGENT']);
+        $paul = $this->createAgent('paul@assist-ia.fr', 'Paul Bernard', 'Nord Habitat', ['ROLE_AGENT']);
+
+        $crawler = $client->request('GET', '/rdv?agent='.$sophie->getId());
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorTextContains('body', 'Rendez-vous avec Sophie Martin');
+
+        $paulSlotIds = array_map(
+            static fn (AvailabilitySlot $slot): string => (string) $slot->getId(),
+            static::getContainer()->get('doctrine')->getRepository(AvailabilitySlot::class)->findBy(['agent' => $paul])
+        );
+        $optionValues = $crawler->filter('select[name="appointment[slot]"] option[value]:not([value=""])')->extract(['value']);
+
+        $this->assertNotEmpty($optionValues);
+        $this->assertEmpty(array_intersect($optionValues, $paulSlotIds));
+    }
+
+    // Fonction qui crée un agent de test
+    private function createAgent(string $email, string $fullName, ?string $agencyName, array $roles): Agent
+    {
+        $container = static::getContainer();
+        $entityManager = $container->get('doctrine')->getManager();
+        $hasher = $container->get(UserPasswordHasherInterface::class);
+
+        $agent = (new Agent())
+            ->setEmail($email)
+            ->setFullName($fullName)
+            ->setAgencyName($agencyName)
+            ->setRoles($roles);
+        $agent->setPassword($hasher->hashPassword($agent, 'Agent123!'));
+
+        $entityManager->persist($agent);
+        $entityManager->flush();
+
+        return $agent;
     }
 
     private function seedAvailableSlot(): AvailabilitySlot

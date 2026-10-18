@@ -34,6 +34,9 @@ class Agent implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\NotBlank]
     private ?string $fullName = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $agencyName = null;
+
     #[ORM\Column(length: 255)]
     private ?string $password = null;
 
@@ -125,6 +128,20 @@ class Agent implements UserInterface, PasswordAuthenticatedUserInterface
     public function setFullName(string $fullName): static
     {
         $this->fullName = $fullName;
+
+        return $this;
+    }
+
+    // Fonction qui retourne le nom de l'agence
+    public function getAgencyName(): ?string
+    {
+        return $this->agencyName;
+    }
+
+    // Fonction qui définit le nom de l'agence
+    public function setAgencyName(?string $agencyName): static
+    {
+        $this->agencyName = $agencyName;
 
         return $this;
     }
