@@ -4,7 +4,43 @@
 
 {% block body %}
 <div class="max-w-6xl mx-auto py-10">
-    <h1 class="text-3xl font-bold mb-8">Nos biens disponibles</h1>
+    <h1 class="text-3xl font-bold mb-6">Nos biens disponibles</h1>
+
+    <form method="get" action="{{ path('public_property_index') }}" role="search" aria-label="Filtrer les biens"
+          class="bg-white border border-gray-100 shadow-sm rounded-2xl p-5 mb-4 grid gap-4 md:grid-cols-4 md:items-end">
+        <div>
+            <label for="filter-ville" class="block text-sm font-medium text-gray-700 mb-1">Ville</label>
+            <input type="text" id="filter-ville" name="ville" value="{{ filters.ville }}" placeholder="Ex : Lyon"
+                   class="w-full h-11 px-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-rose-300">
+        </div>
+        <div>
+            <label for="filter-type" class="block text-sm font-medium text-gray-700 mb-1">Type de bien</label>
+            <select id="filter-type" name="type"
+                    class="w-full h-11 px-3 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-rose-300">
+                <option value="">Tous les types</option>
+                {% for value, label in propertyTypes %}
+                    <option value="{{ value }}" {{ filters.type == value ? 'selected' }}>{{ label }}</option>
+                {% endfor %}
+                {% if filters.type and filters.type not in propertyTypes|keys %}
+                    <option value="{{ filters.type }}" selected>{{ filters.type|upper }}</option>
+                {% endif %}
+            </select>
+        </div>
+        <div>
+            <label for="filter-budget" class="block text-sm font-medium text-gray-700 mb-1">Budget max (€)</label>
+            <input type="number" id="filter-budget" name="budget" value="{{ filters.budget }}" min="0" step="1000" placeholder="Ex : 200000"
+                   class="w-full h-11 px-3 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-rose-300">
+        </div>
+        <div class="flex gap-2">
+            <button type="submit" class="flex-1 h-11 rounded-lg bg-rose-400 text-white font-semibold hover:bg-rose-500">Filtrer</button>
+            {% if hasFilters %}
+                <a href="{{ path('public_property_index') }}"
+                   class="inline-flex items-center justify-center px-4 h-11 rounded-lg bg-gray-100 text-gray-800 font-semibold hover:bg-gray-200">Réinitialiser</a>
+            {% endif %}
+        </div>
+    </form>
+
+    <p class="text-sm text-gray-500 mb-6" aria-live="polite">{{ properties|length }} bien(s) trouvé(s)</p>
 
     <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {% for property in properties %}
@@ -41,7 +77,7 @@
                 </div>
             </article>
         {% else %}
-            <p>Aucun bien pour le moment.</p>
+            <p>{{ hasFilters ? 'Aucun bien ne correspond à ces critères. Essayez un budget plus large ou une autre ville.' : 'Aucun bien pour le moment.' }}</p>
         {% endfor %}
     </div>
 </div>
