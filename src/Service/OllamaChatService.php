@@ -41,19 +41,27 @@ class OllamaChatService
     }
 
     // Fonction qui envoie un message à Ollama et récupère la réponse
-    public function chat(array $messages): ?string
+    public function chat(array $messages, bool $jsonOnly = false): ?string
     {
         if (!$this->isEnabled()) {
             return null;
         }
 
+        $payload = [
+            'model' => $this->model,
+            'messages' => $messages,
+            'stream' => false,
+            // Température à 0 : la même question donne toujours la même réponse
+            'options' => ['temperature' => 0],
+        ];
+        if ($jsonOnly) {
+            // Ollama est obligé de répondre avec un JSON valide, sans texte autour
+            $payload['format'] = 'json';
+        }
+
         try {
             $response = $this->httpClient->request('POST', rtrim($this->baseUrl, '/').'/api/chat', [
-                'json' => [
-                    'model' => $this->model,
-                    'messages' => $messages,
-                    'stream' => false,
-                ],
+                'json' => $payload,
                 'timeout' => 90,
             ]);
 

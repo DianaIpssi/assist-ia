@@ -129,6 +129,29 @@ function getSessionId() {
   return sessionId;
 }
 
+// Liens internes que l'assistant peut proposer : fiche bien, catalogue filtré, RDV, contact
+const CHAT_LINK_PATTERN = /(\/(?:biens(?:\/\d+|\?[^\s]+)?|rdv|contact))(?=\s|$|[.,!?)])/g;
+
+// Fonction qui transforme les liens internes d'un message en liens cliquables
+// (éléments React et non HTML injecté : aucun risque de faille XSS)
+function renderMessageContent(content) {
+  return content.split(CHAT_LINK_PATTERN).map((part, index) => {
+    if (index % 2 === 0) {
+      return part;
+    }
+
+    return React.createElement(
+      'a',
+      {
+        key: index,
+        href: part,
+        style: { color: '#e11d48', fontWeight: 600, textDecoration: 'underline' },
+      },
+      part.startsWith('/biens/') ? 'Voir la fiche' : part.startsWith('/biens?') ? 'ouvrir la liste filtrée' : part
+    );
+  });
+}
+
 // Fonction qui affiche la fenêtre de chat (composant React)
 function Chat({ embedded = false }) {
   const [messages, setMessages] = useState([
@@ -271,7 +294,7 @@ function Chat({ embedded = false }) {
                 lineHeight: '1.45',
               }
             },
-            m.content
+            m.role === 'assistant' ? renderMessageContent(m.content) : m.content
           )
         )
       )

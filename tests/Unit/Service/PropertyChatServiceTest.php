@@ -112,6 +112,38 @@ class PropertyChatServiceTest extends TestCase
         );
     }
 
+    // Fonction qui vérifie que le chat renvoie vers le catalogue filtré avec les critères compris
+    public function testReplyLinksToFilteredCatalogue(): void
+    {
+        $property = (new Property())
+            ->setTitle('T2 avec balcon')
+            ->setPrice(180000)
+            ->setCity('Lyon')
+            ->setStatus(Property::STATUS_PUBLISHED);
+
+        $repository = $this->createMock(PropertyRepository::class);
+        $repository->method('findPublishedByFilters')
+            ->with(200000, 'Lyon', 't2')
+            ->willReturn([$property]);
+
+        $ollama = $this->createMock(OllamaChatService::class);
+        $ollama->method('isAvailable')->willReturn(true);
+        $ollama->method('chat')->willReturn('{"budget":200000,"city":"Lyon","keyword":"t2"}');
+
+        $service = new PropertyChatService($repository, $ollama);
+        $reply = $service->buildReply('Je cherche un T2 à Lyon pour 200000 €');
+
+        $this->assertStringContainsString('/biens?ville=Lyon&type=t2&budget=200000', $reply);
+    }
+
+    // Fonction qui vérifie qu'aucun critère donne le lien vers tout le catalogue
+    public function testCatalogueLinkWithoutCriteria(): void
+    {
+        $service = $this->createService($this->createMock(PropertyRepository::class));
+
+        $this->assertSame('/biens', $service->buildCatalogueLink([]));
+    }
+
     private function createService(PropertyRepository $repository): PropertyChatService
     {
         $ollama = $this->createMock(OllamaChatService::class);

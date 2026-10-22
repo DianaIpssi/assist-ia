@@ -102,7 +102,8 @@ class PropertyChatService
             return $this->formatPropertyList(
                 $this->propertyRepository->findPublishedByMaxBudget($budget),
                 sprintf('Je n\'ai trouvé aucun bien publié sous %d €.', $budget),
-                "Voici des biens correspondant à ton budget :\n\n"
+                "Voici des biens correspondant à ton budget :\n\n",
+                ['budget' => $budget]
             );
         }
 
@@ -111,7 +112,8 @@ class PropertyChatService
             return $this->formatPropertyList(
                 $this->propertyRepository->findPublishedByTitleKeyword($keyword),
                 sprintf('Je n\'ai trouvé aucun bien publié correspondant à « %s ». Tu peux aussi me donner ton budget.', $keyword),
-                sprintf("Voici des biens correspondant à « %s » :\n\n", $keyword)
+                sprintf("Voici des biens correspondant à « %s » :\n\n", $keyword),
+                ['keyword' => $keyword]
             );
         }
 
@@ -143,7 +145,7 @@ class PropertyChatService
 
         $intro = $this->buildSearchIntro($criteria, \count($properties));
 
-        return $this->formatPropertyList($properties, '', $intro);
+        return $this->formatPropertyList($properties, '', $intro, $criteria);
     }
 
     // Fonction qui prépare le texte d'intro des résultats
@@ -176,22 +178,31 @@ class PropertyChatService
             'keyword' => $this->extractSearchKeyword($message),
         ];
 
-        $prompt = <<<PROMPT
-Analyse ce message d'un client qui cherche un bien immobilier en France.
-Réponds UNIQUEMENT avec un JSON valide, sans markdown ni texte autour :
-{"budget":null,"city":null,"keyword":null}
+        $prompt = <<<'PROMPT'
+Tu analyses le message d'un client qui cherche un bien immobilier en France.
+Réponds UNIQUEMENT avec ce JSON : {"budget":null,"city":null,"keyword":null}
 
 Règles :
-- budget : nombre entier en euros ou null
-- city : nom de ville ou null
-- keyword : studio, t2, maison, appartement ou null
+- budget : nombre entier en euros ou null ("200k" = 200000)
+- city : nom de ville écrit dans le message, ou null
+- keyword : studio, t2, t3, maison ou appartement, seulement s'il est écrit dans le message, sinon null
+- n'invente jamais une valeur absente du message
 
-Message : {$message}
+Exemples :
+Message : Je cherche un T2 à Lyon pour 200000 €
+{"budget":200000,"city":"Lyon","keyword":"t2"}
+Message : un studio à Paris
+{"budget":null,"city":"Paris","keyword":"studio"}
+Message : une maison, budget max 350k
+{"budget":350000,"city":null,"keyword":"maison"}
+Message : bonjour, je débute ma recherche
+{"budget":null,"city":null,"keyword":null}
 PROMPT;
 
         $response = $this->ollamaChatService->chat([
-            ['role' => 'user', 'content' => $prompt],
-        ]);
+            ['role' => 'system', 'content' => $prompt],
+            ['role' => 'user', 'content' => $message],
+        ], true);
 
         if ($response === null) {
             return $criteria;
@@ -248,8 +259,20 @@ PROMPT;
         );
     }
 
+    // Fonction qui construit le lien vers le catalogue filtré avec les critères compris
+    public function buildCatalogueLink(array $criteria): string
+    {
+        $query = array_filter([
+            'ville' => $criteria['city'] ?? null,
+            'type' => isset($criteria['keyword']) ? strtolower($criteria['keyword']) : null,
+            'budget' => $criteria['budget'] ?? null,
+        ], static fn ($value): bool => $value !== null && $value !== '');
+
+        return $query === [] ? '/biens' : '/biens?'.http_build_query($query);
+    }
+
     // Fonction qui formate la liste des biens en texte
-    private function formatPropertyList(array $properties, string $emptyMessage, string $intro): string
+    private function formatPropertyList(array $properties, string $emptyMessage, string $intro, array $criteria = []): string
     {
         if ($properties === []) {
             return $emptyMessage !== '' ? $emptyMessage : 'Aucun bien trouvé. Consulte /biens pour voir le catalogue.';
@@ -266,7 +289,10 @@ PROMPT;
             $properties
         );
 
-        $outro = "\n\nToutes les annonces : /biens";
+        $catalogueLink = $this->buildCatalogueLink($criteria);
+        $outro = $catalogueLink === '/biens'
+            ? "\n\nToutes les annonces : /biens"
+            : "\n\nVoir ces résultats dans le catalogue : ".$catalogueLink;
 
         return $intro.implode("\n\n", $lines).$outro;
     }
