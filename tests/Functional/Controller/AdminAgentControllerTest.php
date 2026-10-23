@@ -3,6 +3,7 @@
 namespace App\Tests\Functional\Controller;
 
 use App\Entity\Agent;
+use App\Entity\Property;
 use App\Tests\DatabaseWebTestCase;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
@@ -43,6 +44,32 @@ class AdminAgentControllerTest extends DatabaseWebTestCase
         $client->request('GET', '/admin/agent');
 
         $this->assertResponseStatusCodeSame(403);
+    }
+
+    // Fonction qui vérifie que l'admin voit tous les biens avec leur agent et leur statut
+    public function testAdminPropertyListShowsAgentAndStatus(): void
+    {
+        $client = $this->createClientWithFreshDatabase();
+        $admin = $this->createAgent('admin@assist-ia.fr', ['ROLE_ADMIN', 'ROLE_AGENT']);
+        $agent = $this->createAgent('sophie@assist-ia.fr', ['ROLE_AGENT'])->setFullName('Sophie Martin');
+        $property = (new Property())
+            ->setTitle('T2 avec balcon')
+            ->setPrice(180000)
+            ->setCity('Lyon')
+            ->setStatus(Property::STATUS_PUBLISHED)
+            ->setAgent($agent);
+        $entityManager = static::getContainer()->get('doctrine')->getManager();
+        $entityManager->persist($property);
+        $entityManager->flush();
+
+        $client->loginUser($admin);
+        $client->request('GET', '/admin/property');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorTextContains('h1', 'Tous les biens');
+        $content = $client->getResponse()->getContent();
+        $this->assertStringContainsString('Sophie Martin', $content);
+        $this->assertStringContainsString('Publié', $content);
     }
 
     // Fonction qui crée un agent de test

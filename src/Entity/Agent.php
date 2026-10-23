@@ -114,6 +114,12 @@ class Agent implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    // Fonction qui affiche l'agent par son nom dans les listes de l'admin
+    public function __toString(): string
+    {
+        return (string) $this->fullName;
+    }
+
     // Fonction qui retourne l'email pour la connexion
     public function getUserIdentifier(): string
     {
