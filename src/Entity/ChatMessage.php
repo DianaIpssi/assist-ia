@@ -119,4 +119,12 @@ class ChatMessage
     {
         return $this->createdAt;
     }
+
+    // Fonction qui définit Created At
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
 }

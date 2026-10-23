@@ -61,4 +61,15 @@ class ChatMessageRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    // Fonction qui supprime les messages plus anciens que la date limite (RGPD)
+    public function deleteOlderThan(\DateTimeImmutable $limit): int
+    {
+        return $this->createQueryBuilder('c')
+            ->delete()
+            ->andWhere('c.createdAt < :limit')
+            ->setParameter('limit', $limit)
+            ->getQuery()
+            ->execute();
+    }
 }

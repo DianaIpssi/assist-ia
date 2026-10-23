@@ -29,6 +29,8 @@ APP_SECRET=une-cle-secrete-longue
 MYSQL_ROOT_PASSWORD=mot-de-passe-fort
 MAILER_DSN=smtp://user:pass@smtp.example.com:587
 OLLAMA_ENABLED=true
+# Données fictives (comptes et biens de démo) : pour une démonstration uniquement
+LOAD_DEMO_DATA=1
 
 # 2. Lancer en production : --env-file indique à Docker Compose où lire les secrets
 docker compose --env-file .env.local -f docker-compose.prod.yml up --build -d

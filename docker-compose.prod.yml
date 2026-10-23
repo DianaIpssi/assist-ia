@@ -29,6 +29,8 @@ services:
       APP_SECRET: ${APP_SECRET:?APP_SECRET à définir dans .env.local (lancer avec --env-file .env.local)}
       DATABASE_URL: mysql://root:${MYSQL_ROOT_PASSWORD}@database:3306/assist_ia?serverVersion=8.0&charset=utf8mb4
       MAILER_DSN: ${MAILER_DSN:-null://null}
+      # 1 = charger les données fictives (démonstration uniquement)
+      LOAD_DEMO_DATA: ${LOAD_DEMO_DATA:-0}
       OLLAMA_ENABLED: ${OLLAMA_ENABLED:-false}
       # Adresse fixe : dans un conteneur, 127.0.0.1 (valeur du .env) désigne le conteneur lui-même
       OLLAMA_BASE_URL: "http://host.docker.internal:11434"

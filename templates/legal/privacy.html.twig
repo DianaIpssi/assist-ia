@@ -7,15 +7,27 @@
     <h1 class="text-3xl font-bold mb-4">Politique de confidentialité</h1>
 
     <p class="text-gray-600 mb-6">
-        Assist'IA collecte uniquement les données nécessaires à la mise en relation avec un agent immobilier :
-        nom, email et informations de recherche immobilière.
+        Assist'IA collecte uniquement les données nécessaires à votre recherche et à la mise en relation avec un agent immobilier.
+        Les visiteurs n'ont pas besoin de créer de compte.
+    </p>
+
+    <h2 class="text-xl font-semibold mt-6 mb-2">Données collectées</h2>
+    <ul class="list-disc pl-6 text-gray-700 space-y-2">
+        <li>Conversations avec l'assistant : vos messages, et votre nom et votre email si vous les indiquez.</li>
+        <li>Demandes de rendez-vous : nom, email, téléphone et message, transmis à l'agent choisi.</li>
+        <li>Messages du formulaire de contact : transmis par email à l'agence ou à l'agent du bien.</li>
+    </ul>
+
+    <h2 class="text-xl font-semibold mt-6 mb-2">Durée de conservation</h2>
+    <p class="text-gray-700">
+        Les conversations avec l'assistant sont supprimées automatiquement au bout de 12 mois.
     </p>
 
     <h2 class="text-xl font-semibold mt-6 mb-2">Vos droits (RGPD)</h2>
     <ul class="list-disc pl-6 text-gray-700 space-y-2">
         <li>Droit d'accès et de rectification de vos données personnelles.</li>
-        <li>Droit à l'effacement : contactez votre agent ou l'administrateur pour supprimer votre compte.</li>
-        <li>Les mots de passe sont stockés de manière sécurisée (hachage bcrypt/Argon2).</li>
+        <li>Droit à l'effacement : écrivez-nous via la <a href="{{ path('public_contact') }}" class="text-rose-400 hover:underline">page Contact</a> pour faire supprimer vos conversations ou vos demandes de rendez-vous.</li>
+        <li>Les mots de passe des agents sont stockés de manière sécurisée (hachage bcrypt/Argon2).</li>
         <li>Les données ne sont pas revendues à des tiers.</li>
     </ul>
 
