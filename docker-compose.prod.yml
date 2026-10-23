@@ -28,7 +28,8 @@ services:
       DATABASE_URL: mysql://root:${MYSQL_ROOT_PASSWORD:-root}@database:3306/assist_ia?serverVersion=8.0&charset=utf8mb4
       MAILER_DSN: ${MAILER_DSN:-null://null}
       OLLAMA_ENABLED: ${OLLAMA_ENABLED:-false}
-      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
+      # Adresse fixe : dans un conteneur, 127.0.0.1 (valeur du .env) désigne le conteneur lui-même
+      OLLAMA_BASE_URL: "http://host.docker.internal:11434"
       OLLAMA_MODEL: ${OLLAMA_MODEL:-llama3.2}
     extra_hosts:
       - "host.docker.internal:host-gateway"
