@@ -31,4 +31,8 @@ jobs:
         run: docker compose -f docker-compose.yml config
 
       - name: Validate docker-compose prod
+        # Valeurs factices : les vrais secrets restent dans .env.local sur le serveur
+        env:
+          APP_SECRET: ci-only
+          MYSQL_ROOT_PASSWORD: ci-only
         run: docker compose -f docker-compose.prod.yml config

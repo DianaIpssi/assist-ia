@@ -24,17 +24,18 @@ phpMyAdmin : http://localhost:8081 (user root / mdp root)
 Fichier dédié : `docker-compose.prod.yml` (sans phpMyAdmin, `APP_ENV=prod`).
 
 ```bash
-# 1. Créer un fichier .env.local avec les secrets
+# 1. Créer un fichier .env.local avec les secrets (non versionné)
 APP_SECRET=une-cle-secrete-longue
 MYSQL_ROOT_PASSWORD=mot-de-passe-fort
 MAILER_DSN=smtp://user:pass@smtp.example.com:587
+OLLAMA_ENABLED=true
 
-# 2. Lancer en production
-docker compose -f docker-compose.prod.yml up --build -d
+# 2. Lancer en production : --env-file indique à Docker Compose où lire les secrets
+docker compose --env-file .env.local -f docker-compose.prod.yml up --build -d
 
 # 3. Migrations et données démo (première fois)
-docker compose -f docker-compose.prod.yml exec php php bin/console doctrine:migrations:migrate --no-interaction
-docker compose -f docker-compose.prod.yml exec php php bin/console app:load-demo-data
+docker compose --env-file .env.local -f docker-compose.prod.yml exec php php bin/console doctrine:migrations:migrate --no-interaction
+docker compose --env-file .env.local -f docker-compose.prod.yml exec php php bin/console app:load-demo-data
 ```
 
 L'application est accessible sur le port configuré (défaut : 8000).

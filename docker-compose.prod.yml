@@ -1,14 +1,16 @@
+# Les secrets sont lus dans .env.local (non versionné) :
+# docker compose --env-file .env.local -f docker-compose.prod.yml up --build -d
 services:
   database:
     image: mysql:8.0
     container_name: assist_db_prod
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?MYSQL_ROOT_PASSWORD à définir dans .env.local (lancer avec --env-file .env.local)}
       MYSQL_DATABASE: assist_ia
     volumes:
       - db_data_prod:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-p${MYSQL_ROOT_PASSWORD:-root}"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-p${MYSQL_ROOT_PASSWORD}"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -24,8 +26,8 @@ services:
     environment:
       APP_ENV: prod
       APP_DEBUG: "0"
-      APP_SECRET: ${APP_SECRET:-ChangeMeInProduction}
-      DATABASE_URL: mysql://root:${MYSQL_ROOT_PASSWORD:-root}@database:3306/assist_ia?serverVersion=8.0&charset=utf8mb4
+      APP_SECRET: ${APP_SECRET:?APP_SECRET à définir dans .env.local (lancer avec --env-file .env.local)}
+      DATABASE_URL: mysql://root:${MYSQL_ROOT_PASSWORD}@database:3306/assist_ia?serverVersion=8.0&charset=utf8mb4
       MAILER_DSN: ${MAILER_DSN:-null://null}
       OLLAMA_ENABLED: ${OLLAMA_ENABLED:-false}
       # Adresse fixe : dans un conteneur, 127.0.0.1 (valeur du .env) désigne le conteneur lui-même
