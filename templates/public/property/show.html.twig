@@ -1,6 +1,7 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}{{ property.title }} - Assist'IA{% endblock %}
+{% block meta_description %}{{ property.title }}{% if property.city %} à {{ property.city }}{% endif %}, {{ property.price|number_format(0, ',', ' ') }} €. {{ property.description|default('')|striptags|slice(0, 110) }}{% endblock %}
 
 {% block body %}
 <div class="max-w-4xl mx-auto py-8 space-y-6">
