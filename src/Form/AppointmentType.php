@@ -8,6 +8,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TelType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -39,6 +40,14 @@ class AppointmentType extends AbstractType
             ->add('clientPhone', TelType::class, [
                 'required' => false,
                 'label' => 'Téléphone',
+            ])
+            ->add('message', TextareaType::class, [
+                'required' => false,
+                'label' => 'Message (facultatif)',
+                'attr' => [
+                    'rows' => 3,
+                    'placeholder' => 'Ex : je souhaite visiter le bien, ou être rappelé(e) par téléphone',
+                ],
             ])
         ;
     }

@@ -8,6 +8,7 @@ use App\Service\AppointmentMailerService;
 use App\Service\AvailabilitySlotGeneratorService;
 use App\Repository\AgentRepository;
 use App\Repository\AvailabilitySlotRepository;
+use App\Repository\PropertyRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,6 +26,7 @@ final class AppointmentController extends AbstractController
         AppointmentMailerService $appointmentMailerService,
         AvailabilitySlotGeneratorService $slotGenerator,
         AgentRepository $agentRepository,
+        PropertyRepository $propertyRepository,
     ): Response {
         $slotGenerator->ensureUpcomingSlots();
 
@@ -46,6 +48,13 @@ final class AppointmentController extends AbstractController
         $availableSlots = $slotRepository->findAvailableUpcomingForAgent($selectedAgent);
 
         $appointment = new Appointment();
+
+        // Depuis la fiche d'un bien, le message est prérempli avec le bien concerné
+        $property = $propertyRepository->find($request->query->getInt('bien'));
+        if ($property && $property->isPublished() && $property->getAgent() === $selectedAgent) {
+            $appointment->setMessage(sprintf('Je souhaite visiter le bien « %s » (réf. %d).', $property->getTitle(), $property->getId()));
+        }
+
         $form = $this->createForm(AppointmentType::class, $appointment, [
             'available_slots' => $availableSlots,
         ]);

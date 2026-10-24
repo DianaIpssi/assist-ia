@@ -46,17 +46,19 @@ class AppointmentMailerService
         }
 
         $date = $slot->getStartAt()?->format('d/m/Y H:i') ?? '';
+        $message = $appointment->getMessage() ? "\n\nMessage du client : ".$appointment->getMessage() : '';
 
         $email = (new Email())
             ->from('noreply@assist-ia.fr')
             ->to($agent->getEmail())
             ->subject('Nouveau rendez-vous client Assist\'IA')
             ->text(sprintf(
-                "Bonjour %s,\n\n%s (%s) a réservé un créneau le %s.\n\nAssist'IA",
+                "Bonjour %s,\n\n%s (%s) a réservé un créneau le %s.%s\n\nAssist'IA",
                 $agent->getFullName(),
                 $appointment->getClientName(),
                 $appointment->getClientEmail(),
-                $date
+                $date,
+                $message
             ));
 
         $this->mailer->send($email);

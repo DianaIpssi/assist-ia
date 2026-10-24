@@ -52,6 +52,11 @@
                     {{ form_widget(form.clientPhone, {attr: {class: fieldClass}}) }}
                     {{ form_errors(form.clientPhone) }}
                 </div>
+                <div>
+                    {{ form_label(form.message, null, {label_attr: {class: labelClass}}) }}
+                    {{ form_widget(form.message, {attr: {class: fieldClass}}) }}
+                    {{ form_errors(form.message) }}
+                </div>
                 <button type="submit" class="px-6 py-3 rounded-xl bg-rose-400 text-white font-semibold hover:bg-rose-500">
                     Confirmer le rendez-vous
                 </button>

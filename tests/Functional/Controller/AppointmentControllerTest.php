@@ -3,7 +3,9 @@
 namespace App\Tests\Functional\Controller;
 
 use App\Entity\Agent;
+use App\Entity\Appointment;
 use App\Entity\AvailabilitySlot;
+use App\Entity\Property;
 use App\Tests\DatabaseWebTestCase;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
@@ -75,6 +77,38 @@ class AppointmentControllerTest extends DatabaseWebTestCase
 
         $this->assertNotEmpty($optionValues);
         $this->assertEmpty(array_intersect($optionValues, $paulSlotIds));
+    }
+
+    // Fonction qui vérifie que, depuis la fiche d'un bien, le message est prérempli et enregistré avec le rendez-vous
+    public function testMessageIsPrefilledFromPropertyAndSaved(): void
+    {
+        $client = $this->createClientWithFreshDatabase();
+        $slot = $this->seedAvailableSlot();
+        $agent = $slot->getAgent();
+        $property = (new Property())
+            ->setTitle('T2 avec balcon')
+            ->setPrice(180000)
+            ->setStatus(Property::STATUS_PUBLISHED)
+            ->setAgent($agent);
+        $entityManager = static::getContainer()->get('doctrine')->getManager();
+        $entityManager->persist($property);
+        $entityManager->flush();
+
+        $crawler = $client->request('GET', '/rdv?agent='.$agent->getId().'&bien='.$property->getId());
+
+        $this->assertResponseIsSuccessful();
+        $this->assertStringContainsString('T2 avec balcon', $crawler->filter('textarea[name="appointment[message]"]')->text());
+
+        $client->submit($crawler->selectButton('Confirmer le rendez-vous')->form([
+            'appointment[slot]' => (string) $slot->getId(),
+            'appointment[clientName]' => 'Client Test',
+            'appointment[clientEmail]' => 'client@test.fr',
+            'appointment[message]' => 'Je souhaite visiter le bien « T2 avec balcon », plutôt en fin de journée.',
+        ]));
+
+        $this->assertResponseRedirects('/rdv?agent='.$agent->getId());
+        $appointment = static::getContainer()->get('doctrine')->getRepository(Appointment::class)->findOneBy(['clientEmail' => 'client@test.fr']);
+        $this->assertStringContainsString('fin de journée', $appointment->getMessage());
     }
 
     // Fonction qui crée un agent de test
