@@ -34,7 +34,7 @@ jobs:
       - name: Lint container
         run: php bin/console lint:container
       - name: Security audit
-        run: composer audit --no-interaction || true
+        run: composer audit --no-interaction
       - name: Prepare test environment
         run: mkdir -p var && php bin/console doctrine:schema:create --env=test --no-interaction
       - name: Run PHPUnit

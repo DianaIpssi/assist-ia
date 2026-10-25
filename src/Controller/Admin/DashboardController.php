@@ -2,9 +2,6 @@
 
 namespace App\Controller\Admin;
 
-use App\Entity\Agent;
-use App\Entity\AvailabilitySlot;
-use App\Entity\Property;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
@@ -35,8 +32,8 @@ class DashboardController extends AbstractDashboardController
     {
         yield MenuItem::linkToRoute('Retour espace agent', 'fas fa-arrow-left', 'agent_dashboard');
         yield MenuItem::section('Gestion globale');
-        yield MenuItem::linkToCrud('Tous les biens', 'fas fa-building', Property::class);
-        yield MenuItem::linkToCrud('Tous les créneaux', 'fas fa-calendar', AvailabilitySlot::class);
-        yield MenuItem::linkToCrud('Agents', 'fas fa-user-tie', Agent::class);
+        yield MenuItem::linkTo(PropertyCrudController::class, 'Tous les biens', 'fas fa-building');
+        yield MenuItem::linkTo(AvailabilitySlotCrudController::class, 'Tous les créneaux', 'fas fa-calendar');
+        yield MenuItem::linkTo(AgentCrudController::class, 'Agents', 'fas fa-user-tie');
     }
 }
