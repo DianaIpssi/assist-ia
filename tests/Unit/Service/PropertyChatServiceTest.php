@@ -136,6 +136,24 @@ class PropertyChatServiceTest extends TestCase
         $this->assertStringContainsString('/biens?ville=Lyon&type=t2&budget=200000', $reply);
     }
 
+    // Fonction qui vérifie qu'une ville et un budget inventés par l'IA sont ignorés
+    public function testOllamaInventedCityAndBudgetAreIgnored(): void
+    {
+        $repository = $this->createMock(PropertyRepository::class);
+        $repository->expects($this->once())
+            ->method('findPublishedByFilters')
+            ->with(null, null, 't2')
+            ->willReturn([]);
+        $repository->method('findPublished')->willReturn([]);
+
+        $ollama = $this->createMock(OllamaChatService::class);
+        $ollama->method('isAvailable')->willReturn(true);
+        $ollama->method('chat')->willReturn('{"budget":200000,"city":"Marseille","keyword":"t2"}');
+
+        $service = new PropertyChatService($repository, $ollama);
+        $service->buildReply('Je cherche un T2 à Lyon');
+    }
+
     // Fonction qui vérifie qu'aucun critère donne le lien vers tout le catalogue
     public function testCatalogueLinkWithoutCriteria(): void
     {

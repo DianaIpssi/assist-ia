@@ -218,7 +218,7 @@ PROMPT;
             return $criteria;
         }
 
-        if (isset($parsed['budget']) && is_numeric($parsed['budget'])) {
+        if (isset($parsed['budget']) && is_numeric($parsed['budget']) && $this->hasNumber($message)) {
             $criteria['budget'] = (int) $parsed['budget'];
         }
 
@@ -239,6 +239,14 @@ PROMPT;
         $value = mb_strtolower(trim($value));
 
         return $value !== '' && str_contains(mb_strtolower($message), $value);
+    }
+
+    // Fonction qui vérifie que le message contient un montant (hors T2, T3...), sinon le budget proposé par l'IA est inventé
+    private function hasNumber(string $message): bool
+    {
+        $withoutTypology = preg_replace('/\bt\s*[0-9]+\b/u', '', mb_strtolower($message)) ?? $message;
+
+        return preg_match('/\d/', $withoutTypology) === 1;
     }
 
     // Fonction qui cherche les biens selon les critères
