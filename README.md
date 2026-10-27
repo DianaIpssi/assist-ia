@@ -34,15 +34,15 @@ docker compose down
 
 # Prod (3 conteneurs : MySQL, PHP, Nginx)
 docker compose --env-file .env.local -f docker-compose.prod.yml up -d --build
-docker compose -f docker-compose.prod.yml ps
-docker compose -f docker-compose.prod.yml down
+docker compose --env-file .env.local -f docker-compose.prod.yml ps
+docker compose --env-file .env.local -f docker-compose.prod.yml down
 ```
 
-Dev et prod utilisent le même port 8000 : arrêter l'un avant de lancer l'autre, avec le même fichier `-f` que pour le démarrage.
+Dev et prod utilisent le même port 8000 : arrêter l'un avant de lancer l'autre. En prod, toutes les commandes (`up`, `ps`, `down`, `exec`) ont besoin de `--env-file .env.local` : sans les secrets, Docker Compose refuse de lire le fichier.
 
 ```bash
 # Passer de la prod au dev
-docker compose -f docker-compose.prod.yml down
+docker compose --env-file .env.local -f docker-compose.prod.yml down
 docker compose up -d
 
 # Revenir à la prod
